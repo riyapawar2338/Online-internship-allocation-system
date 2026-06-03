@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Management — AI Internship System</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .mgmt-layout { display:grid; grid-template-columns:360px 1fr; gap:2rem; align-items:start; }
+    .form-panel   { position:sticky; top:80px; }
+    .form-panel .card-header { background:linear-gradient(135deg,rgba(21,101,192,.3),rgba(0,180,216,.1)); }
+
+    .student-card {
+      background:var(--glass-bg); border:1px solid var(--glass-border);
+      border-radius:var(--radius); padding:1.25rem; transition:var(--transition);
+      position:relative;
+    }
+    .student-card:hover { border-color:rgba(0,180,216,.4); box-shadow:var(--shadow-glow); }
+    .sc-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1rem; }
+    .sc-avatar {
+      width:44px; height:44px; border-radius:12px; flex-shrink:0;
+      background:linear-gradient(135deg,var(--blue),var(--cyan));
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-head); font-weight:800; font-size:1.1rem; color:var(--navy);
+    }
+    .sc-name   { font-weight:700; font-size:.95rem; }
+    .sc-roll   { font-family:var(--font-mono); font-size:.72rem; color:var(--muted); }
+    .sc-actions{ display:flex; gap:.4rem; }
+    .sc-meta   { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin-bottom:1rem; }
+    .sc-meta-item .label { font-size:.7rem; color:var(--muted); margin-bottom:.1rem; }
+    .sc-meta-item .value { font-size:.82rem; color:var(--white-2); font-weight:500; }
+    .sc-skills { display:flex; flex-wrap:wrap; gap:.35rem; }
+
+    .students-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:1.25rem; }
+
+    .empty-state { text-align:center; padding:4rem 2rem; color:var(--muted); }
+    .empty-icon  { font-size:3.5rem; margin-bottom:1rem; opacity:.5; }
+
+    @media(max-width:1024px){ .mgmt-layout { grid-template-columns:1fr; } .form-panel { position:static; } }
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand"><div class="brand-icon">🤖</div><span>AI Internship System</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="about.html">About</a>
+    <a href="student-management.html">Students</a><a href="student-dashboard.html">Dashboard</a>
+    <a href="recommendations.html">Internships</a><a href="admin-dashboard.html">Admin</a>
+    <a href="contact.html">Contact</a>
+    <a href="student-management.html" class="nav-cta btn">+ Add Student</a>
+  </div>
+  <button class="nav-toggle"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-wrapper">
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">›</span><span>Student Management</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h1>Student Management</h1>
+          <p>Add, edit, update, and delete student profiles. All data stored locally.</p>
+        </div>
+        <div style="display:flex;gap:.5rem" id="heroStats">
+          <div class="badge badge-cyan" id="totalBadge">0 Students</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="container">
+      <div class="mgmt-layout">
+        <!-- FORM PANEL -->
+        <div class="form-panel">
+          <div class="card">
+            <div class="card-header">
+              <h3 id="formTitle">➕ Add New Student</h3>
+            </div>
+            <div class="card-body">
+              <form id="studentForm" novalidate>
+                <input type="hidden" id="studentId"/>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Full Name <span class="req">*</span></label>
+                    <input class="form-control" id="sFullName" placeholder="e.g. Riya Sharma" data-validate="required"/>
+                    <div class="form-error">This field is required.</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Roll Number <span class="req">*</span></label>
+                    <input class="form-control" id="sRollNo" placeholder="e.g. CSE2024001" data-validate="required"/>
+                    <div class="form-error">This field is required.</div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Department / Branch <span class="req">*</span></label>
+                    <select class="form-control" id="sDept" data-validate="required">
+                      <option value="">Select Branch</option>
+                      <option>Computer Engineering</option>
+                      <option>Information Technology</option>
+                      <option>Electronics &amp; Telecom</option>
+                      <option>Electrical Engineering</option>
+                      <option>Mechanical Engineering</option>
+                      <option>Civil Engineering</option>
+                      <option>AI &amp; Data Science</option>
+                    </select>
+                    <div class="form-error">Please select a branch.</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Semester <span class="req">*</span></label>
+                    <select class="form-control" id="sSemester" data-validate="required">
+                      <option value="">Select Sem</option>
+                      <option>Semester 1</option><option>Semester 2</option>
+                      <option>Semester 3</option><option>Semester 4</option>
+                      <option>Semester 5</option><option>Semester 6</option>
+                    </select>
+                    <div class="form-error">Please select semester.</div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">CGPA (0–10) <span class="req">*</span></label>
+                    <input class="form-control" id="sCgpa" type="number" step="0.01" min="0" max="10" placeholder="e.g. 8.5" data-validate="required cgpa"/>
+                    <div class="form-error">Enter CGPA between 0–10.</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Percentage (%)</label>
+                    <input class="form-control" id="sPercent" type="number" step="0.1" min="0" max="100" placeholder="e.g. 85.5" data-validate="percent"/>
+                    <div class="form-error">Enter value between 0–100.</div>
+                  </div>
+                </div>
+
+                <!-- Technical Skills Tags -->
+                <div class="form-group">
+                  <label class="form-label">Technical Skills <span class="req">*</span></label>
+                  <div class="tags-input-wrapper" id="techSkillsWrapper">
+                    <input class="tags-input" placeholder="Type skill and press Enter…"/>
+                  </div>
+                  <input type="hidden" id="sTechSkills" data-validate="required"/>
+                  <div class="form-hint">e.g. Python, React, Machine Learning</div>
+                  <div class="form-error">Add at least one technical skill.</div>
+                </div>
+
+                <!-- Soft Skills Tags -->
+                <div class="form-group">
+                  <label class="form-label">Soft Skills</label>
+                  <div class="tags-input-wrapper" id="softSkillsWrapper">
+                    <input class="tags-input" placeholder="Type and press Enter…"/>
+                  </div>
+                  <input type="hidden" id="sSoftSkills"/>
+                </div>
+
+                <!-- Certifications Tags -->
+                <div class="form-group">
+                  <label class="form-label">Certifications</label>
+                  <div class="tags-input-wrapper" id="certsWrapper">
+                    <input class="tags-input" placeholder="e.g. AWS Cloud Practitioner…"/>
+                  </div>
+                  <input type="hidden" id="sCertifications"/>
+                </div>
+
+                <!-- Projects -->
+                <div class="form-group">
+                  <label class="form-label">Projects</label>
+                  <textarea class="form-control" id="sProjects" placeholder="List your projects (one per line) e.g.&#10;E-Commerce Website - React, Node.js&#10;Attendance System - Python, OpenCV"></textarea>
+                </div>
+
+                <!-- Areas of Interest Tags -->
+                <div class="form-group">
+                  <label class="form-label">Areas of Interest</label>
+                  <div class="tags-input-wrapper" id="interestWrapper">
+                    <input class="tags-input" placeholder="e.g. AI, Web Dev, Cybersecurity…"/>
+                  </div>
+                  <input type="hidden" id="sInterests"/>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Preferred Internship Domain <span class="req">*</span></label>
+                  <select class="form-control" id="sDomain" data-validate="required">
+                    <option value="">Select Domain</option>
+                    <option>Artificial Intelligence</option>
+                    <option>Web Development</option>
+                    <option>Data Science</option>
+                    <option>Mobile Development</option>
+                    <option>Cybersecurity</option>
+                    <option>Cloud Computing</option>
+                    <option>UI/UX Design</option>
+                    <option>Internet of Things</option>
+                    <option>Embedded Systems</option>
+                    <option>DevOps</option>
+                  </select>
+                  <div class="form-error">Please select a preferred domain.</div>
+                </div>
+
+                <!-- Resume Upload -->
+                <div class="form-group">
+                  <label class="form-label">Resume Upload</label>
+                  <div class="file-upload-area" id="resumeUpload">
+                    <input type="file" accept=".pdf,.doc,.docx"/>
+                    <div class="file-upload-icon">📄</div>
+                    <div class="file-upload-text">Drag &amp; drop or <span>click to browse</span></div>
+                    <div class="file-upload-text" style="font-size:.7rem;margin-top:.25rem">PDF, DOC, DOCX up to 5MB</div>
+                    <div class="file-name" id="resumeFileName"></div>
+                  </div>
+                  <input type="hidden" id="sResume"/>
+                </div>
+
+                <!-- Contact -->
+                <div class="form-group">
+                  <label class="form-label">Email Address <span class="req">*</span></label>
+                  <input class="form-control" id="sEmail" type="email" placeholder="student@example.com" data-validate="required email"/>
+                  <div class="form-error">Enter a valid email address.</div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input class="form-control" id="sPhone" type="tel" placeholder="10-digit number" data-validate="phone"/>
+                    <div class="form-error">Enter a valid 10-digit number.</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">City / Location</label>
+                    <input class="form-control" id="sCity" placeholder="e.g. Pune"/>
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:.75rem;margin-top:.5rem">
+                  <button type="submit" class="btn btn-primary w-full" id="submitBtn">💾 Save Student Profile</button>
+                  <button type="button" class="btn btn-ghost" id="resetBtn" onclick="resetForm()">↺</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- STUDENTS PANEL -->
+        <div>
+          <!-- Search & Filter -->
+          <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center">
+            <div class="search-bar" style="flex:1;min-width:200px">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="searchInput" placeholder="Search students by name, roll, department…"/>
+            </div>
+            <div class="filter-bar">
+              <select id="filterDept">
+                <option value="">All Departments</option>
+                <option>Computer Engineering</option>
+                <option>Information Technology</option>
+                <option>Electronics &amp; Telecom</option>
+                <option>AI &amp; Data Science</option>
+                <option>Mechanical Engineering</option>
+              </select>
+              <select id="filterSem">
+                <option value="">All Semesters</option>
+                <option>Semester 1</option><option>Semester 2</option>
+                <option>Semester 3</option><option>Semester 4</option>
+                <option>Semester 5</option><option>Semester 6</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Table View Toggle -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <div id="resultCount" style="color:var(--muted);font-size:.85rem"></div>
+            <div style="display:flex;gap:.5rem">
+              <button class="btn btn-ghost btn-sm view-btn active" data-view="grid" title="Grid View">⊞</button>
+              <button class="btn btn-ghost btn-sm view-btn" data-view="table" title="Table View">☰</button>
+            </div>
+          </div>
+
+          <!-- Grid View -->
+          <div id="gridView">
+            <div class="students-grid" id="studentsGrid"></div>
+            <div class="empty-state hidden" id="emptyState">
+              <div class="empty-icon">🎓</div>
+              <h3 style="margin-bottom:.5rem">No Students Yet</h3>
+              <p>Use the form on the left to add your first student profile.</p>
+            </div>
+          </div>
+
+          <!-- Table View -->
+          <div id="tableView" class="hidden">
+            <div class="card">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th><th>Roll No.</th><th>Branch</th>
+                      <th>Sem</th><th>CGPA</th><th>Domain</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="studentsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-bottom"><p>© 2025 AI Internship Allocation &amp; Recommendation System</p></div>
+    </div>
+  </footer>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header">
+      <h3>🗑️ Delete Student</h3>
+      <button class="modal-close" onclick="closeModal('deleteModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--muted)">Are you sure you want to delete <strong id="deleteStudentName" style="color:var(--white)"></strong>? This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">🗑️ Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="script.js"></script>
+<script>
+  // Tag controllers
+  let techCtrl, softCtrl, certCtrl, interestCtrl;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    techCtrl     = initTagsInput('techSkillsWrapper',  'sTechSkills');
+    softCtrl     = initTagsInput('softSkillsWrapper',  'sSoftSkills');
+    certCtrl     = initTagsInput('certsWrapper',       'sCertifications');
+    interestCtrl = initTagsInput('interestWrapper',    'sInterests');
+    initFileUpload('resumeUpload');
+    renderStudents();
+
+    document.getElementById('searchInput').addEventListener('input', renderStudents);
+    document.getElementById('filterDept').addEventListener('change', renderStudents);
+    document.getElementById('filterSem').addEventListener('change', renderStudents);
+
+    // View toggle
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const v = btn.dataset.view;
+        document.getElementById('gridView').classList.toggle('hidden', v !== 'grid');
+        document.getElementById('tableView').classList.toggle('hidden', v !== 'table');
+      });
+    });
+
+    // Form submit
+    document.getElementById('studentForm').addEventListener('submit', saveStudent);
+  });
+
+  function saveStudent(e) {
+    e.preventDefault();
+    // Sync hidden inputs for tags
+    document.getElementById('sTechSkills').value = techCtrl.getTags().join(',');
+
+    if (!validateForm('studentForm')) { showToast('Please fix the errors in the form.', 'error'); return; }
+    if (!techCtrl.getTags().length) {
+      document.getElementById('sTechSkills').classList.add('error');
+      showToast('Please add at least one technical skill.', 'error'); return;
+    }
+
+    const id = document.getElementById('studentId').value || genId();
+    const student = {
+      id, createdAt: Store.getOne(KEYS.STUDENTS, id)?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      fullName:       document.getElementById('sFullName').value.trim(),
+      rollNo:         document.getElementById('sRollNo').value.trim(),
+      department:     document.getElementById('sDept').value,
+      semester:       document.getElementById('sSemester').value,
+      cgpa:           document.getElementById('sCgpa').value,
+      percentage:     document.getElementById('sPercent').value,
+      technicalSkills:techCtrl.getTags().join(', '),
+      softSkills:     softCtrl.getTags().join(', '),
+      certifications: certCtrl.getTags().join(', '),
+      projects:       document.getElementById('sProjects').value,
+      areasOfInterest:interestCtrl.getTags().join(', '),
+      preferredDomain:document.getElementById('sDomain').value,
+      resumeFile:     document.getElementById('resumeUpload').dataset.fileName || document.getElementById('sResume').value || '',
+      email:          document.getElementById('sEmail').value.trim(),
+      phone:          document.getElementById('sPhone').value.trim(),
+      city:           document.getElementById('sCity').value.trim(),
+    };
+    Store.save(KEYS.STUDENTS, student);
+    showToast(`✅ ${student.fullName} ${document.getElementById('studentId').value ? 'updated' : 'added'} successfully!`, 'success');
+    resetForm();
+    renderStudents();
+  }
+
+  function editStudent(id) {
+    const s = Store.getOne(KEYS.STUDENTS, id);
+    if (!s) return;
+    document.getElementById('studentId').value = s.id;
+    document.getElementById('sFullName').value = s.fullName;
+    document.getElementById('sRollNo').value   = s.rollNo;
+    document.getElementById('sDept').value     = s.department;
+    document.getElementById('sSemester').value = s.semester;
+    document.getElementById('sCgpa').value     = s.cgpa;
+    document.getElementById('sPercent').value  = s.percentage;
+    document.getElementById('sProjects').value = s.projects;
+    document.getElementById('sDomain').value   = s.preferredDomain;
+    document.getElementById('sResume').value   = s.resumeFile;
+    document.getElementById('sEmail').value    = s.email;
+    document.getElementById('sPhone').value    = s.phone;
+    document.getElementById('sCity').value     = s.city;
+
+    techCtrl.setTags(s.technicalSkills ? s.technicalSkills.split(',').map(t=>t.trim()).filter(Boolean) : []);
+    softCtrl.setTags(s.softSkills ? s.softSkills.split(',').map(t=>t.trim()).filter(Boolean) : []);
+    certCtrl.setTags(s.certifications ? s.certifications.split(',').map(t=>t.trim()).filter(Boolean) : []);
+    interestCtrl.setTags(s.areasOfInterest ? s.areasOfInterest.split(',').map(t=>t.trim()).filter(Boolean) : []);
+
+    if (s.resumeFile) { document.getElementById('resumeFileName').textContent = `📎 ${s.resumeFile}`; }
+
+    document.getElementById('formTitle').textContent = '✏️ Edit Student Profile';
+    document.getElementById('submitBtn').textContent = '💾 Update Profile';
+    document.querySelector('.form-panel').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function resetForm() {
+    document.getElementById('studentForm').reset();
+    document.getElementById('studentId').value = '';
+    document.getElementById('formTitle').textContent = '➕ Add New Student';
+    document.getElementById('submitBtn').textContent = '💾 Save Student Profile';
+    document.getElementById('resumeFileName').textContent = '';
+    document.getElementById('resumeUpload').dataset.fileName = '';
+    techCtrl.setTags([]); softCtrl.setTags([]); certCtrl.setTags([]); interestCtrl.setTags([]);
+    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('error'));
+    document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+  }
+
+  let pendingDeleteId = null;
+  function deleteStudent(id) {
+    const s = Store.getOne(KEYS.STUDENTS, id);
+    if (!s) return;
+    pendingDeleteId = id;
+    document.getElementById('deleteStudentName').textContent = s.fullName;
+    openModal('deleteModal');
+  }
+  document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+    if (!pendingDeleteId) return;
+    const s = Store.getOne(KEYS.STUDENTS, pendingDeleteId);
+    Store.remove(KEYS.STUDENTS, pendingDeleteId);
+    showToast(`🗑️ ${s?.fullName} removed.`, 'info');
+    closeModal('deleteModal');
+    pendingDeleteId = null;
+    renderStudents();
+    if (document.getElementById('studentId').value === pendingDeleteId) resetForm();
+  });
+
+  function viewStudent(id) {
+    sessionStorage.setItem('viewStudentId', id);
+    window.location.href = 'student-dashboard.html';
+  }
+
+  function getInitials(name) {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+  }
+
+  function renderStudents() {
+    const all    = Store.get(KEYS.STUDENTS);
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const dept   = document.getElementById('filterDept').value;
+    const sem    = document.getElementById('filterSem').value;
+
+    let filtered = all.filter(s => {
+      const matchSearch = !search ||
+        s.fullName?.toLowerCase().includes(search) ||
+        s.rollNo?.toLowerCase().includes(search) ||
+        s.department?.toLowerCase().includes(search) ||
+        s.technicalSkills?.toLowerCase().includes(search);
+      const matchDept = !dept || s.department === dept;
+      const matchSem  = !sem  || s.semester === sem;
+      return matchSearch && matchDept && matchSem;
+    });
+
+    document.getElementById('totalBadge').textContent = `${all.length} Student${all.length !== 1 ? 's' : ''}`;
+    document.getElementById('resultCount').textContent = `Showing ${filtered.length} of ${all.length} students`;
+
+    // Grid
+    const grid = document.getElementById('studentsGrid');
+    const empty = document.getElementById('emptyState');
+    grid.innerHTML = '';
+    if (filtered.length === 0) {
+      empty.classList.remove('hidden');
+    } else {
+      empty.classList.add('hidden');
+      filtered.forEach(s => {
+        const skills = (s.technicalSkills || '').split(',').map(t=>t.trim()).filter(Boolean).slice(0,4);
+        const cgpa   = parseFloat(s.cgpa) || 0;
+        const card   = document.createElement('div');
+        card.className = 'student-card fade-in-up';
+        card.innerHTML = `
+          <div class="sc-header">
+            <div style="display:flex;gap:.75rem;align-items:center">
+              <div class="sc-avatar">${getInitials(s.fullName || '??')}</div>
+              <div>
+                <div class="sc-name">${s.fullName}</div>
+                <div class="sc-roll">${s.rollNo}</div>
+              </div>
+            </div>
+            <div class="sc-actions">
+              <button class="btn btn-ghost btn-icon btn-sm" title="View" onclick="viewStudent('${s.id}')">👁️</button>
+              <button class="btn btn-ghost btn-icon btn-sm" title="Edit" onclick="editStudent('${s.id}')">✏️</button>
+              <button class="btn btn-danger btn-icon btn-sm" title="Delete" onclick="deleteStudent('${s.id}')">🗑️</button>
+            </div>
+          </div>
+          <div class="sc-meta">
+            <div class="sc-meta-item"><div class="label">Department</div><div class="value">${s.department}</div></div>
+            <div class="sc-meta-item"><div class="label">Semester</div><div class="value">${s.semester}</div></div>
+            <div class="sc-meta-item"><div class="label">CGPA</div><div class="value" style="color:${cgpa>=8?'var(--success)':cgpa>=6?'var(--warning)':'var(--danger)'}">${cgpa}</div></div>
+            <div class="sc-meta-item"><div class="label">Domain</div><div class="value">${s.preferredDomain || '—'}</div></div>
+          </div>
+          <div class="sc-skills">
+            ${skills.map(sk=>`<span class="chip">${sk}</span>`).join('')}
+            ${(s.technicalSkills||'').split(',').filter(Boolean).length > 4 ? `<span class="chip" style="background:rgba(255,255,255,.05);color:var(--muted)">+${(s.technicalSkills||'').split(',').filter(Boolean).length - 4}</span>` : ''}
+          </div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    // Table
+    const tbody = document.getElementById('studentsTable');
+    tbody.innerHTML = '';
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No students found.</td></tr>';
+    } else {
+      filtered.forEach(s => {
+        const cgpa = parseFloat(s.cgpa)||0;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${s.fullName}</strong></td>
+          <td><span style="font-family:var(--font-mono);font-size:.8rem">${s.rollNo}</span></td>
+          <td>${s.department}</td><td>${s.semester}</td>
+          <td style="color:${cgpa>=8?'var(--success)':cgpa>=6?'var(--warning)':'var(--danger)'}">${cgpa}</td>
+          <td>${s.preferredDomain||'—'}</td>
+          <td>
+            <div style="display:flex;gap:.35rem">
+              <button class="btn btn-ghost btn-icon btn-sm" onclick="viewStudent('${s.id}')" title="View">👁️</button>
+              <button class="btn btn-ghost btn-icon btn-sm" onclick="editStudent('${s.id}')" title="Edit">✏️</button>
+              <button class="btn btn-danger btn-icon btn-sm" onclick="deleteStudent('${s.id}')" title="Delete">🗑️</button>
+            </div>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+  }
+</script>
+</body>
+</html>

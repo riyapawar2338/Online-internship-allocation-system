@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact — AI Internship System</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .contact-layout { display:grid; grid-template-columns:1fr 1.4fr; gap:3rem; align-items:start; }
+
+    /* Info panel */
+    .info-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-lg); padding:2rem; }
+    .info-card-title { font-family:var(--font-head); font-size:1.15rem; font-weight:700; margin-bottom:1.25rem; display:flex; align-items:center; gap:.6rem; }
+    .contact-item { display:flex; gap:1rem; align-items:flex-start; padding:.85rem 0; border-bottom:1px solid var(--glass-border); }
+    .contact-item:last-child { border-bottom:none; }
+    .ci-icon { width:40px; height:40px; border-radius:10px; background:var(--glass-bg-2); border:1px solid var(--glass-border); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .ci-label { font-size:.73rem; color:var(--muted); margin-bottom:.2rem; font-family:var(--font-mono); letter-spacing:.06em; text-transform:uppercase; }
+    .ci-value { font-size:.9rem; color:var(--white-2); font-weight:500; }
+
+    /* Team cards */
+    .team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+    .team-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-lg); padding:1.5rem; text-align:center; transition:var(--transition); }
+    .team-card:hover { transform:translateY(-5px); box-shadow:var(--shadow-glow); border-color:rgba(0,180,216,.4); }
+    .team-avatar { width:64px; height:64px; border-radius:16px; margin:0 auto .9rem; background:linear-gradient(135deg,var(--blue),var(--cyan)); display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-weight:800; font-size:1.3rem; color:var(--navy); box-shadow:var(--shadow-glow); }
+    .team-name { font-family:var(--font-head); font-size:1rem; font-weight:700; margin-bottom:.2rem; }
+    .team-role { font-size:.78rem; color:var(--cyan); margin-bottom:.5rem; }
+    .team-dept { font-size:.75rem; color:var(--muted); }
+    .team-skills { display:flex; flex-wrap:wrap; gap:.3rem; justify-content:center; margin-top:.7rem; }
+
+    /* Contact form */
+    .form-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-lg); }
+
+    /* Map placeholder */
+    .map-placeholder { background:linear-gradient(135deg,rgba(21,101,192,.2),rgba(0,180,216,.1)); border:1px solid var(--glass-border); border-radius:var(--radius-lg); height:200px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:.75rem; margin-top:1.25rem; }
+    .map-placeholder .map-icon { font-size:2.5rem; }
+    .map-placeholder p { color:var(--muted); font-size:.875rem; }
+
+    /* FAQ */
+    .faq-item { border:1px solid var(--glass-border); border-radius:var(--radius); overflow:hidden; margin-bottom:.75rem; }
+    .faq-q { padding:1rem 1.25rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:var(--glass-bg); font-weight:600; font-size:.9rem; transition:var(--transition); }
+    .faq-q:hover { background:var(--glass-bg-2); }
+    .faq-q .arrow { transition:var(--transition); color:var(--cyan); }
+    .faq-q.open .arrow { transform:rotate(180deg); }
+    .faq-a { display:none; padding:1rem 1.25rem; color:var(--muted); font-size:.875rem; line-height:1.7; border-top:1px solid var(--glass-border); }
+    .faq-a.open { display:block; animation:slideUp .2s ease; }
+
+    @media(max-width:1024px){ .contact-layout { grid-template-columns:1fr; } .team-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:640px) { .team-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand"><div class="brand-icon">🤖</div><span>AI Internship System</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="about.html">About</a>
+    <a href="student-management.html">Students</a><a href="student-dashboard.html">Dashboard</a>
+    <a href="recommendations.html">Internships</a><a href="admin-dashboard.html">Admin</a>
+    <a href="contact.html">Contact</a>
+    <a href="student-management.html" class="nav-cta btn">+ Add Student</a>
+  </div>
+  <button class="nav-toggle"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-wrapper">
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">›</span><span>Contact</span></div>
+      <h1>Contact &amp; Team</h1>
+      <p>Get in touch with the project team or reach out to our college for internship enquiries.</p>
+    </div>
+  </div>
+
+  <!-- CONTACT SECTION -->
+  <section>
+    <div class="container">
+      <div class="contact-layout">
+        <!-- Left: Info + College + Map -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+          <!-- College Info -->
+          <div class="info-card">
+            <div class="info-card-title">🏫 College Information</div>
+            <div class="contact-item">
+              <div class="ci-icon">🏛️</div>
+              <div><div class="ci-label">Institution</div><div class="ci-value">Government Polytechnic College</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon">🎓</div>
+              <div><div class="ci-label">Department</div><div class="ci-value">Computer Engineering</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon">📍</div>
+              <div><div class="ci-label">Address</div><div class="ci-value">Near Civil Hospital, Aurangabad, Maharashtra — 431001</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon">📞</div>
+              <div><div class="ci-label">Phone</div><div class="ci-value">+91 240 234 5678</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon">📧</div>
+              <div><div class="ci-label">Email</div><div class="ci-value">placement@gpc-aurangabad.edu.in</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon">⏰</div>
+              <div><div class="ci-label">Office Hours</div><div class="ci-value">Mon–Sat · 9:00 AM – 5:00 PM</div></div>
+            </div>
+
+            <div class="map-placeholder">
+              <div class="map-icon">🗺️</div>
+              <p>Aurangabad, Maharashtra</p>
+              <a href="https://maps.google.com/?q=Aurangabad+Maharashtra" target="_blank" class="btn btn-outline btn-sm">Open in Google Maps ↗</a>
+            </div>
+          </div>
+
+          <!-- Project Info -->
+          <div class="info-card">
+            <div class="info-card-title">📋 Project Details</div>
+            <div class="contact-item">
+              <div class="ci-icon">🤖</div>
+              <div><div class="ci-label">Project Title</div><div class="ci-value">AI Internship Allocation &amp; Recommendation System</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon">📅</div>
+              <div><div class="ci-label">Academic Year</div><div class="ci-value">2024–2025 (Final Year Diploma)</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon">🔬</div>
+              <div><div class="ci-label">Project Type</div><div class="ci-value">Capstone / Final Year Project</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon">🛠️</div>
+              <div><div class="ci-label">Tech Stack</div><div class="ci-value">HTML · CSS · JavaScript · Node.js · Express · MongoDB</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="ci-icon">👨‍🏫</div>
+              <div><div class="ci-label">Project Guide</div><div class="ci-value">Prof. A. R. Deshmukh (CSE Dept.)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Contact Form -->
+        <div>
+          <div class="form-card">
+            <div class="card-header">
+              <h3>💬 Send Us a Message</h3>
+            </div>
+            <div class="card-body" style="padding:1.75rem">
+              <form id="contactForm" novalidate>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Your Name <span class="req">*</span></label>
+                    <input class="form-control" id="cName" placeholder="Full Name" data-validate="required"/>
+                    <div class="form-error">Name is required.</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Email Address <span class="req">*</span></label>
+                    <input class="form-control" id="cEmail" type="email" placeholder="you@example.com" data-validate="required email"/>
+                    <div class="form-error">Enter a valid email.</div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input class="form-control" id="cPhone" placeholder="10-digit number" data-validate="phone"/>
+                    <div class="form-error">Enter a valid phone number.</div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Subject <span class="req">*</span></label>
+                    <select class="form-control" id="cSubject" data-validate="required">
+                      <option value="">Select Subject</option>
+                      <option>General Enquiry</option>
+                      <option>Internship Opportunity</option>
+                      <option>Student Registration</option>
+                      <option>Technical Support</option>
+                      <option>Project Collaboration</option>
+                      <option>Feedback / Suggestion</option>
+                    </select>
+                    <div class="form-error">Please select a subject.</div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Your Organization / College</label>
+                  <input class="form-control" id="cOrg" placeholder="e.g. ABC Engineering College, Pune"/>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Message <span class="req">*</span></label>
+                  <textarea class="form-control" id="cMessage" rows="5" placeholder="Describe your query or message in detail…" data-validate="required"></textarea>
+                  <div class="form-error">Message is required.</div>
+                  <div class="form-hint"><span id="charCount">0</span>/500 characters</div>
+                </div>
+
+                <div style="background:rgba(0,180,216,.06);border:1px solid rgba(0,180,216,.15);border-radius:var(--radius);padding:1rem;margin-bottom:1.25rem">
+                  <label style="display:flex;align-items:flex-start;gap:.75rem;cursor:pointer">
+                    <input type="checkbox" id="cConsent" style="margin-top:3px;accent-color:var(--cyan)"/>
+                    <span style="font-size:.8rem;color:var(--muted);line-height:1.6">I agree that my submitted data is collected and stored as per the project's data policy for academic demonstration purposes.</span>
+                  </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full btn-lg" id="contactSubmitBtn">
+                  📨 Send Message
+                </button>
+
+                <div id="submitSuccess" class="hidden" style="margin-top:1rem;background:rgba(0,200,151,.1);border:1px solid rgba(0,200,151,.3);border-radius:var(--radius);padding:1rem;text-align:center;color:var(--success)">
+                  ✅ Message sent successfully! We'll get back to you within 24 hours.
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section style="background:var(--navy-2)">
+    <div class="container">
+      <div class="text-center mb-4">
+        <div class="section-label">Our Team</div>
+        <h2 class="section-title">Project Team Members</h2>
+        <p class="section-sub" style="margin:0 auto">The talented students behind the AI Internship Allocation &amp; Recommendation System.</p>
+      </div>
+      <div class="team-grid">
+        <div class="team-card fade-in-up delay-1">
+          <div class="team-avatar">AR</div>
+          <div class="team-name">Arjun Rathod</div>
+          <div class="team-role">🔧 Full Stack Developer</div>
+          <div class="team-dept">Computer Engineering · Sem 6</div>
+          <div class="team-skills">
+            <span class="chip">HTML/CSS</span><span class="chip">JavaScript</span><span class="chip">Node.js</span>
+          </div>
+        </div>
+        <div class="team-card fade-in-up delay-2">
+          <div class="team-avatar" style="background:linear-gradient(135deg,var(--accent-2),var(--blue))">PS</div>
+          <div class="team-name">Priya Sharma</div>
+          <div class="team-role">🤖 AI/ML Engineer</div>
+          <div class="team-dept">Computer Engineering · Sem 6</div>
+          <div class="team-skills">
+            <span class="chip">Python</span><span class="chip">ML</span><span class="chip">Algorithm Design</span>
+          </div>
+        </div>
+        <div class="team-card fade-in-up delay-3">
+          <div class="team-avatar" style="background:linear-gradient(135deg,var(--success),var(--cyan))">RK</div>
+          <div class="team-name">Rohit Kulkarni</div>
+          <div class="team-role">🗄️ Backend Developer</div>
+          <div class="team-dept">Computer Engineering · Sem 6</div>
+          <div class="team-skills">
+            <span class="chip">MongoDB</span><span class="chip">Express</span><span class="chip">REST API</span>
+          </div>
+        </div>
+        <div class="team-card fade-in-up delay-1">
+          <div class="team-avatar" style="background:linear-gradient(135deg,var(--warning),var(--accent))">SM</div>
+          <div class="team-name">Sneha More</div>
+          <div class="team-role">🎨 UI/UX Designer</div>
+          <div class="team-dept">Computer Engineering · Sem 6</div>
+          <div class="team-skills">
+            <span class="chip">Figma</span><span class="chip">CSS</span><span class="chip">Design Systems</span>
+          </div>
+        </div>
+        <div class="team-card fade-in-up delay-2">
+          <div class="team-avatar" style="background:linear-gradient(135deg,var(--danger),var(--accent-2))">VD</div>
+          <div class="team-name">Vishal Desai</div>
+          <div class="team-role">📊 Data Analyst</div>
+          <div class="team-dept">Computer Engineering · Sem 6</div>
+          <div class="team-skills">
+            <span class="chip">SQL</span><span class="chip">Charts</span><span class="chip">Analytics</span>
+          </div>
+        </div>
+        <div class="team-card fade-in-up delay-3">
+          <div class="team-avatar" style="background:linear-gradient(135deg,var(--cyan),var(--success))">NP</div>
+          <div class="team-name">Neha Patil</div>
+          <div class="team-role">🧪 QA &amp; Tester</div>
+          <div class="team-dept">Computer Engineering · Sem 6</div>
+          <div class="team-skills">
+            <span class="chip">Testing</span><span class="chip">Postman</span><span class="chip">Documentation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section>
+    <div class="container" style="max-width:800px">
+      <div class="text-center mb-4">
+        <div class="section-label">FAQ</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+      <div id="faqContainer">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">How does the AI match score work? <span class="arrow">▼</span></div>
+          <div class="faq-a">The AI engine uses a 4-factor scoring model: technical skills overlap (40%), preferred domain match (25%), CGPA vs minimum requirement (20%), and areas of interest alignment (15%). These combine for a score out of 100.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Can I add students without logging in? <span class="arrow">▼</span></div>
+          <div class="faq-a">Yes — the Student Management page is accessible to anyone. When connected to the backend, admin operations like deleting records require an admin login via the Admin Dashboard.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Where is student data stored? <span class="arrow">▼</span></div>
+          <div class="faq-a">Frontend mode uses browser LocalStorage for offline demonstration. When the Node.js/MongoDB backend is running, data is stored in a MongoDB database and accessed via REST API.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">How do I set up the backend API? <span class="arrow">▼</span></div>
+          <div class="faq-a">Install Node.js and MongoDB, copy the backend folder, run <code style="background:rgba(0,180,216,.1);padding:.1rem .4rem;border-radius:4px;font-family:var(--font-mono)">npm install</code>, configure the <code style="background:rgba(0,180,216,.1);padding:.1rem .4rem;border-radius:4px;font-family:var(--font-mono)">.env</code> file with your MongoDB URI, run <code style="background:rgba(0,180,216,.1);padding:.1rem .4rem;border-radius:4px;font-family:var(--font-mono)">npm run seed</code>, then <code style="background:rgba(0,180,216,.1);padding:.1rem .4rem;border-radius:4px;font-family:var(--font-mono)">npm run dev</code>. See README.md for full instructions.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Can companies register on the system? <span class="arrow">▼</span></div>
+          <div class="faq-a">In the current version, internship listings are managed by the admin. Company self-registration is planned as a future enhancement in the next version of the project.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Is this project suitable for viva presentation? <span class="arrow">▼</span></div>
+          <div class="faq-a">Absolutely. The system demonstrates AI/ML concepts, full-stack web development, database design, REST API architecture, and modern UI/UX design — all core topics examiners look for in a final year capstone project.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand" style="margin-bottom:.75rem"><div class="brand-icon">🤖</div><span>AI Internship System</span></div>
+          <p>Final Year Diploma Capstone Project — Government Polytechnic College, Aurangabad</p>
+        </div>
+        <div class="footer-col"><h4>Navigation</h4><ul>
+          <li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li>
+          <li><a href="student-management.html">Students</a></li><li><a href="admin-dashboard.html">Admin</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>Features</h4><ul>
+          <li><a href="recommendations.html">Internships</a></li>
+          <li><a href="student-dashboard.html">Dashboard</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>Contact</h4><ul>
+          <li><a href="mailto:placement@gpc-aurangabad.edu.in">placement@gpc-aurangabad.edu.in</a></li>
+          <li><a href="tel:+912402345678">+91 240 234 5678</a></li>
+          <li><a href="#">Aurangabad, Maharashtra</a></li>
+        </ul></div>
+      </div>
+      <div class="footer-bottom"><p>© 2025 AI Internship Allocation &amp; Recommendation System · Final Year Diploma Capstone Project · Government Polytechnic College, Aurangabad</p></div>
+    </div>
+  </footer>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="script.js"></script>
+<script>
+  // Character counter
+  document.getElementById('cMessage').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
+    if (this.value.length > 500) this.value = this.value.slice(0, 500);
+  });
+
+  // Contact form submit
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!validateForm('contactForm')) { showToast('Please fix form errors.', 'error'); return; }
+    if (!document.getElementById('cConsent').checked) {
+      showToast('Please accept the data policy to continue.', 'warning'); return;
+    }
+    const btn = document.getElementById('contactSubmitBtn');
+    btn.textContent = '⏳ Sending…'; btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = '📨 Send Message'; btn.disabled = false;
+      document.getElementById('submitSuccess').classList.remove('hidden');
+      document.getElementById('contactForm').reset();
+      document.getElementById('charCount').textContent = '0';
+      showToast('Message sent successfully!', 'success');
+    }, 1200);
+  });
+
+  // FAQ toggle
+  function toggleFaq(el) {
+    const ans = el.nextElementSibling;
+    el.classList.toggle('open');
+    ans.classList.toggle('open');
+  }
+</script>
+</body>
+</html>

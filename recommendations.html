@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Internship Recommendations — AI Internship System</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .rec-layout { display:grid; grid-template-columns:280px 1fr; gap:2rem; align-items:start; }
+    .filters-panel { position:sticky; top:80px; }
+
+    .filter-section { margin-bottom:1.25rem; }
+    .filter-section h4 { font-family:var(--font-mono); font-size:.72rem; color:var(--cyan); letter-spacing:.1em; text-transform:uppercase; margin-bottom:.75rem; }
+    .filter-check { display:flex; align-items:center; gap:.6rem; padding:.3rem 0; cursor:pointer; }
+    .filter-check input { accent-color:var(--cyan); width:14px; height:14px; }
+    .filter-check label { font-size:.85rem; color:var(--white-2); cursor:pointer; }
+
+    .int-card {
+      background:var(--glass-bg); border:1px solid var(--glass-border);
+      border-radius:var(--radius-lg); padding:1.5rem; transition:var(--transition);
+      position:relative; overflow:hidden;
+    }
+    .int-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--blue),var(--cyan)); transform:scaleX(0); transform-origin:left; transition:transform .3s ease; }
+    .int-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-glow); border-color:rgba(0,180,216,.4); }
+    .int-card:hover::before { transform:scaleX(1); }
+    .int-card.recommended { border-color:rgba(0,200,151,.3); }
+    .int-card.recommended::before { transform:scaleX(1); background:linear-gradient(90deg,var(--success),var(--cyan)); }
+
+    .ic-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
+    .ic-company { display:flex; align-items:center; gap:.75rem; }
+    .company-logo { width:44px; height:44px; border-radius:12px; background:var(--glass-bg-2); border:1px solid var(--glass-border); display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+    .ic-title    { font-family:var(--font-head); font-size:1.05rem; font-weight:700; }
+    .ic-company-name { font-size:.82rem; color:var(--muted); }
+    .ic-meta     { display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:1rem; }
+    .ic-meta-item{ display:flex; align-items:center; gap:.3rem; font-size:.78rem; color:var(--muted); }
+    .ic-desc     { font-size:.875rem; color:var(--white-2); line-height:1.7; margin-bottom:1rem; }
+    .ic-skills   { display:flex; flex-wrap:wrap; gap:.35rem; margin-bottom:1.1rem; }
+    .ic-footer   { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.75rem; }
+
+    .match-display { display:flex; align-items:center; gap:.75rem; }
+    .match-score-circle { width:52px; height:52px; position:relative; }
+    .match-score-circle svg { transform:rotate(-90deg); }
+    .match-score-pct { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-weight:800; font-size:.78rem; }
+    .match-label { font-size:.75rem; color:var(--muted); }
+    .match-label strong { display:block; font-size:.8rem; color:var(--white-2); }
+
+    .student-select-bar {
+      background:var(--glass-bg-2); border:1px solid var(--glass-border); border-radius:var(--radius);
+      padding:1rem 1.25rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;
+    }
+    .student-select-bar .ai-icon { font-size:1.4rem; }
+    .student-select-bar p { flex:1; font-size:.875rem; color:var(--muted); min-width:200px; }
+    .student-select-bar select { background:rgba(10,22,48,.8); border:1.5px solid var(--glass-border); border-radius:var(--radius); padding:.5rem .9rem; color:var(--white); font-size:.875rem; cursor:pointer; outline:none; min-width:200px; }
+    .student-select-bar select:focus { border-color:var(--cyan); }
+
+    .results-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:.75rem; }
+    .int-grid { display:flex; flex-direction:column; gap:1.25rem; }
+
+    .applied-badge { position:absolute; top:1rem; right:1rem; background:rgba(0,200,151,.2); border:1px solid rgba(0,200,151,.4); color:var(--success); padding:.2rem .6rem; border-radius:6px; font-size:.72rem; font-weight:600; }
+
+    @media(max-width:1024px){ .rec-layout { grid-template-columns:1fr; } .filters-panel { position:static; } }
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand"><div class="brand-icon">🤖</div><span>AI Internship System</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="about.html">About</a>
+    <a href="student-management.html">Students</a><a href="student-dashboard.html">Dashboard</a>
+    <a href="recommendations.html">Internships</a><a href="admin-dashboard.html">Admin</a>
+    <a href="contact.html">Contact</a>
+    <a href="student-management.html" class="nav-cta btn">+ Add Student</a>
+  </div>
+  <button class="nav-toggle"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-wrapper">
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">›</span><span>Internships & Recommendations</span></div>
+      <h1>Internship Listings</h1>
+      <p>Browse all opportunities. Select a student to see AI-powered match scores for each listing.</p>
+    </div>
+  </div>
+
+  <section>
+    <div class="container">
+      <div class="rec-layout">
+        <!-- Filters Sidebar -->
+        <div class="filters-panel">
+          <div class="card">
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+              <h3>🔧 Filters</h3>
+              <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Clear</button>
+            </div>
+            <div class="card-body">
+              <div class="search-bar mb-2" style="margin-bottom:1rem">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="intSearch" placeholder="Search internships…"/>
+              </div>
+
+              <div class="filter-section">
+                <h4>Domain</h4>
+                <div id="domainFilters"></div>
+              </div>
+              <div class="filter-section">
+                <h4>Location</h4>
+                <div id="locationFilters"></div>
+              </div>
+              <div class="filter-section">
+                <h4>Duration</h4>
+                <div id="durationFilters"></div>
+              </div>
+              <div class="filter-section">
+                <h4>Min CGPA</h4>
+                <select class="form-control" id="cgpaFilter" style="font-size:.85rem;padding:.5rem .8rem">
+                  <option value="">Any</option>
+                  <option value="6">6.0+</option>
+                  <option value="6.5">6.5+</option>
+                  <option value="7">7.0+</option>
+                  <option value="7.5">7.5+</option>
+                  <option value="8">8.0+</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Internships List -->
+        <div>
+          <!-- AI Student Selector -->
+          <div class="student-select-bar">
+            <span class="ai-icon">🤖</span>
+            <p>Select a student to enable AI Match Scores calculated from their profile data.</p>
+            <select id="aiStudentSelector">
+              <option value="">— No Student Selected —</option>
+            </select>
+          </div>
+
+          <div class="results-header">
+            <div id="intResultCount" style="color:var(--muted);font-size:.875rem"></div>
+            <div style="display:flex;gap:.5rem;align-items:center">
+              <span style="font-size:.8rem;color:var(--muted)">Sort:</span>
+              <select class="form-control" id="sortSelect" style="padding:.4rem .8rem;font-size:.82rem;width:auto">
+                <option value="match">Best Match</option>
+                <option value="stipend">Stipend</option>
+                <option value="deadline">Deadline</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="int-grid" id="internshipsGrid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer><div class="container"><div class="footer-bottom"><p>© 2025 AI Internship Allocation &amp; Recommendation System</p></div></div></footer>
+</div>
+
+<!-- Apply Modal -->
+<div class="modal-overlay" id="applyModal">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <h3>📋 Apply for Internship</h3>
+      <button class="modal-close" onclick="closeModal('applyModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="applyContent"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('applyModal')">Cancel</button>
+      <button class="btn btn-primary" id="confirmApplyBtn">✅ Confirm Application</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="script.js"></script>
+<script>
+  let selectedStudent = null;
+  let appliedSet = new Set(Store.get(KEYS.APPLICATIONS).map(a=>a.internshipId+'_'+a.studentId));
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const applications = Store.get(KEYS.APPLICATIONS);
+    appliedSet = new Set(applications.map(a=>`${a.internshipId}_${a.studentId}`));
+
+    populateStudentSelector();
+    buildFilters();
+    renderInternships();
+
+    document.getElementById('intSearch').addEventListener('input', renderInternships);
+    document.getElementById('aiStudentSelector').addEventListener('change', e => {
+      selectedStudent = e.target.value ? Store.getOne(KEYS.STUDENTS, e.target.value) : null;
+      renderInternships();
+    });
+    document.getElementById('cgpaFilter').addEventListener('change', renderInternships);
+    document.getElementById('sortSelect').addEventListener('change', renderInternships);
+
+    const domain = sessionStorage.getItem('filterDomain');
+    if (domain) { sessionStorage.removeItem('filterDomain'); }
+  });
+
+  function populateStudentSelector() {
+    const sel = document.getElementById('aiStudentSelector');
+    sel.innerHTML = '<option value="">— No Student Selected —</option>';
+    Store.get(KEYS.STUDENTS).forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id; opt.textContent = `${s.fullName} (${s.rollNo})`;
+      sel.appendChild(opt);
+    });
+  }
+
+  function buildFilters() {
+    const internships = Store.get(KEYS.INTERNSHIPS);
+    const domains    = [...new Set(internships.map(i=>i.domain))];
+    const locations  = [...new Set(internships.map(i=>i.location))];
+    const durations  = [...new Set(internships.map(i=>i.duration))];
+
+    function buildCheckList(containerId, items) {
+      const cont = document.getElementById(containerId);
+      cont.innerHTML = '';
+      items.forEach(item => {
+        cont.innerHTML += `<div class="filter-check">
+          <input type="checkbox" id="f_${item.replace(/\s/g,'_')}" value="${item}" class="filter-cb" onchange="renderInternships()"/>
+          <label for="f_${item.replace(/\s/g,'_')}">${item}</label>
+        </div>`;
+      });
+    }
+    buildCheckList('domainFilters', domains);
+    buildCheckList('locationFilters', locations);
+    buildCheckList('durationFilters', durations);
+  }
+
+  function getChecked(containerId) {
+    return [...document.querySelectorAll(`#${containerId} .filter-cb:checked`)].map(el=>el.value);
+  }
+
+  function clearFilters() {
+    document.querySelectorAll('.filter-cb').forEach(cb => cb.checked = false);
+    document.getElementById('intSearch').value = '';
+    document.getElementById('cgpaFilter').value = '';
+    renderInternships();
+  }
+
+  function renderInternships() {
+    let internships = Store.get(KEYS.INTERNSHIPS);
+    const search  = document.getElementById('intSearch').value.toLowerCase();
+    const domains = getChecked('domainFilters');
+    const locs    = getChecked('locationFilters');
+    const durs    = getChecked('durationFilters');
+    const minCgpa = parseFloat(document.getElementById('cgpaFilter').value) || 0;
+
+    internships = internships.filter(i => {
+      const s = !search || i.title.toLowerCase().includes(search) || i.company.toLowerCase().includes(search) || i.domain.toLowerCase().includes(search) || (i.requiredSkills||'').toLowerCase().includes(search);
+      const d = !domains.length || domains.includes(i.domain);
+      const l = !locs.length   || locs.includes(i.location);
+      const du= !durs.length   || durs.includes(i.duration);
+      const c = !minCgpa       || parseFloat(i.minCgpa||0) <= minCgpa;
+      return s && d && l && du && c;
+    });
+
+    // Compute scores
+    internships = internships.map(i => ({
+      ...i, score: selectedStudent ? calcMatchScore(selectedStudent, i) : null
+    }));
+
+    // Sort
+    const sort = document.getElementById('sortSelect').value;
+    if (sort === 'match' && selectedStudent) internships.sort((a,b)=>b.score-a.score);
+    else if (sort === 'stipend') internships.sort((a,b)=>{
+      const pa = parseInt((a.stipend||'0').replace(/[^0-9]/g,'')); 
+      const pb = parseInt((b.stipend||'0').replace(/[^0-9]/g,''));
+      return pb - pa;
+    });
+
+    document.getElementById('intResultCount').textContent = `${internships.length} internship${internships.length!==1?'s':''} found`;
+
+    const grid = document.getElementById('internshipsGrid');
+    grid.innerHTML = '';
+
+    if (!internships.length) {
+      grid.innerHTML = `<div style="text-align:center;padding:4rem;color:var(--muted)">
+        <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
+        <p>No internships match your filters.</p>
+        <button class="btn btn-ghost mt-2" onclick="clearFilters()" style="margin-top:1rem">Clear Filters</button>
+      </div>`;
+      return;
+    }
+
+    const icons = { 'Artificial Intelligence':'🤖', 'Web Development':'🌐', 'Data Science':'📊', 'Mobile Development':'📱', 'Cybersecurity':'🔒', 'Cloud Computing':'☁️', 'UI/UX Design':'🎨', 'Internet of Things':'🔌' };
+
+    internships.forEach(i => {
+      const isApplied = selectedStudent && appliedSet.has(`${i.id}_${selectedStudent.id}`);
+      const isRec = i.score !== null && i.score >= 60;
+      const scoreColor = i.score>=80?'var(--success)':i.score>=60?'var(--warning)':'var(--danger)';
+      const skills = (i.requiredSkills||'').split(',').map(s=>s.trim()).filter(Boolean);
+      const r = 20; const circ = 2*Math.PI*r;
+      const offset = i.score !== null ? circ-(i.score/100)*circ : circ;
+
+      const card = document.createElement('div');
+      card.className = `int-card fade-in-up ${isRec?'recommended':''}`;
+      card.innerHTML = `
+        ${isApplied ? '<span class="applied-badge">✅ Applied</span>' : ''}
+        <div class="ic-header">
+          <div class="ic-company">
+            <div class="company-logo">${icons[i.domain]||'🏢'}</div>
+            <div>
+              <div class="ic-title">${i.title}</div>
+              <div class="ic-company-name">${i.company}</div>
+            </div>
+          </div>
+          ${i.score !== null ? `
+          <div class="match-display">
+            <div class="match-score-circle">
+              <svg width="52" height="52" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="${r}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="4"/>
+                <circle cx="26" cy="26" r="${r}" fill="none" stroke="${scoreColor}" stroke-width="4"
+                  stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+              </svg>
+              <div class="match-score-pct" style="color:${scoreColor}">${i.score}%</div>
+            </div>
+            <div class="match-label">
+              <strong style="color:${scoreColor}">${i.score>=80?'Excellent':i.score>=60?'Good':i.score>=40?'Fair':'Low'}</strong>
+              Match
+            </div>
+          </div>` : ''}
+        </div>
+        <div class="ic-meta">
+          <div class="ic-meta-item">📍 ${i.location}</div>
+          <div class="ic-meta-item">⏱️ ${i.duration}</div>
+          <div class="ic-meta-item">💰 ${i.stipend}</div>
+          <div class="ic-meta-item">🎓 Min CGPA: ${i.minCgpa}</div>
+          <div class="ic-meta-item">👥 ${i.seats} Seats</div>
+          <div class="ic-meta-item">📅 Deadline: ${fmtDate(i.deadline)}</div>
+        </div>
+        <p class="ic-desc">${i.description}</p>
+        <div class="ic-skills">
+          ${skills.map(s=>`<span class="chip" style="font-size:.73rem">${s}</span>`).join('')}
+        </div>
+        <div class="ic-footer">
+          <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+            ${(i.tags||[]).map(t=>`<span class="badge badge-cyan">${t}</span>`).join('')}
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-outline btn-sm" onclick="showDetails('${i.id}')">📄 Details</button>
+            ${isApplied
+              ? '<span class="btn btn-success btn-sm" style="cursor:default">✅ Applied</span>'
+              : `<button class="btn btn-primary btn-sm" onclick="applyFor('${i.id}')">Apply Now →</button>`}
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  let pendingApplyId = null;
+  function applyFor(internshipId) {
+    if (!selectedStudent) {
+      showToast('Please select a student first to apply.', 'warning');
+      document.getElementById('aiStudentSelector').focus();
+      return;
+    }
+    const i = Store.getOne(KEYS.INTERNSHIPS, internshipId);
+    pendingApplyId = internshipId;
+    document.getElementById('applyContent').innerHTML = `
+      <p style="color:var(--muted);margin-bottom:1rem">Submitting application for:</p>
+      <div class="card" style="padding:1rem;margin-bottom:.75rem">
+        <div style="font-weight:700">${i.title}</div>
+        <div style="font-size:.85rem;color:var(--muted)">${i.company} · ${i.location}</div>
+      </div>
+      <p style="color:var(--muted)">Student: <strong style="color:var(--white)">${selectedStudent.fullName}</strong> (${selectedStudent.rollNo})</p>
+      ${i.score !== undefined ? `<p style="color:var(--muted);margin-top:.5rem">AI Match Score: <strong style="color:var(--success)">${calcMatchScore(selectedStudent,i)}%</strong></p>` : ''}`;
+    openModal('applyModal');
+  }
+
+  document.getElementById('confirmApplyBtn').addEventListener('click', () => {
+    if (!pendingApplyId || !selectedStudent) return;
+    const application = {
+      id: genId(), internshipId: pendingApplyId, studentId: selectedStudent.id,
+      studentName: selectedStudent.fullName, rollNo: selectedStudent.rollNo,
+      appliedAt: new Date().toISOString(), status: 'Pending',
+      matchScore: calcMatchScore(selectedStudent, Store.getOne(KEYS.INTERNSHIPS, pendingApplyId))
+    };
+    const apps = Store.get(KEYS.APPLICATIONS);
+    apps.push(application);
+    Store.set(KEYS.APPLICATIONS, apps);
+    appliedSet.add(`${pendingApplyId}_${selectedStudent.id}`);
+    closeModal('applyModal');
+    showToast('🎉 Application submitted successfully!', 'success');
+    renderInternships();
+  });
+
+  function showDetails(id) {
+    const i = Store.getOne(KEYS.INTERNSHIPS, id);
+    showToast(`${i.title} at ${i.company} — ${i.seats} seats available, deadline ${fmtDate(i.deadline)}`, 'info');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Dashboard — AI Internship System</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .dash-layout { display:grid; grid-template-columns:300px 1fr; gap:2rem; align-items:start; }
+    .profile-card { text-align:center; padding:2rem 1.5rem; }
+    .profile-avatar {
+      width:80px; height:80px; border-radius:20px; margin:0 auto 1rem;
+      background:linear-gradient(135deg,var(--blue),var(--cyan));
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-head); font-weight:800; font-size:2rem; color:var(--navy);
+      box-shadow:var(--shadow-glow);
+    }
+    .profile-name { font-family:var(--font-head); font-size:1.3rem; font-weight:800; }
+    .profile-roll { font-family:var(--font-mono); font-size:.75rem; color:var(--muted); margin-top:.25rem; }
+    .profile-dept { color:var(--cyan); font-size:.85rem; margin-top:.4rem; }
+    .profile-meta { margin-top:1.25rem; display:flex; flex-direction:column; gap:.6rem; text-align:left; }
+    .pm-row { display:flex; justify-content:space-between; font-size:.82rem; padding:.5rem 0; border-bottom:1px solid var(--glass-border); }
+    .pm-key { color:var(--muted); }
+    .pm-val { color:var(--white-2); font-weight:500; text-align:right; }
+
+    .completeness-ring { margin: 1rem auto; }
+    .dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.5rem; }
+
+    /* Skill chart bars */
+    .skill-bar-row { display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem; }
+    .skill-bar-label { width:130px; font-size:.82rem; color:var(--white-2); flex-shrink:0; }
+    .skill-bar-wrap  { flex:1; }
+    .skill-bar-score { font-family:var(--font-mono); font-size:.75rem; color:var(--cyan); width:30px; text-align:right; }
+
+    /* Match cards */
+    .match-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius); padding:1.1rem; display:flex; gap:1rem; align-items:center; transition:var(--transition); cursor:pointer; }
+    .match-card:hover { border-color:rgba(0,180,216,.4); }
+    .match-ring { position:relative; width:56px; height:56px; flex-shrink:0; }
+    .match-ring svg { transform:rotate(-90deg); }
+    .match-pct { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-weight:800; font-size:.8rem; }
+    .match-info { flex:1; min-width:0; }
+    .match-title { font-weight:600; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .match-co    { font-size:.78rem; color:var(--muted); }
+    .match-tags  { display:flex; gap:.3rem; flex-wrap:wrap; margin-top:.3rem; }
+
+    .selector-bar { display:flex; gap:.75rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem; }
+    .selector-bar select { background:rgba(10,22,48,.8); border:1.5px solid var(--glass-border); border-radius:var(--radius); padding:.5rem .9rem; color:var(--white); font-size:.875rem; cursor:pointer; outline:none; }
+
+    .no-student-msg { text-align:center; padding:5rem 2rem; }
+    .no-student-msg .ni { font-size:4rem; margin-bottom:1rem; opacity:.5; }
+
+    @media(max-width:1024px){ .dash-layout { grid-template-columns:1fr; } }
+    @media(max-width:640px) { .dash-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand"><div class="brand-icon">🤖</div><span>AI Internship System</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a><a href="about.html">About</a>
+    <a href="student-management.html">Students</a><a href="student-dashboard.html">Dashboard</a>
+    <a href="recommendations.html">Internships</a><a href="admin-dashboard.html">Admin</a>
+    <a href="contact.html">Contact</a>
+    <a href="student-management.html" class="nav-cta btn">+ Add Student</a>
+  </div>
+  <button class="nav-toggle"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-wrapper">
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">›</span><span>Student Dashboard</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h1>Student Dashboard</h1>
+          <p>View profile details, skills overview, and AI internship recommendations.</p>
+        </div>
+        <div class="selector-bar">
+          <select id="studentSelector" style="min-width:220px">
+            <option value="">— Select a Student —</option>
+          </select>
+          <a href="student-management.html" class="btn btn-primary btn-sm">✏️ Manage</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="container" id="mainContent">
+      <!-- No student selected -->
+      <div class="no-student-msg" id="noStudentMsg">
+        <div class="ni">📊</div>
+        <h2 style="margin-bottom:.5rem">Select a Student</h2>
+        <p style="color:var(--muted);margin-bottom:1.5rem">Choose a student from the dropdown above to view their dashboard, skills overview, and AI-powered internship recommendations.</p>
+        <a href="student-management.html" class="btn btn-primary">➕ Add a Student First</a>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div id="dashContent" class="hidden">
+        <div class="dash-layout">
+          <!-- Sidebar -->
+          <div>
+            <div class="card profile-card mb-3" style="margin-bottom:1.25rem">
+              <div class="profile-avatar" id="pAvatar">??</div>
+              <div class="profile-name" id="pName">—</div>
+              <div class="profile-roll" id="pRoll">—</div>
+              <div class="profile-dept" id="pDept">—</div>
+              <div style="margin-top:1rem">
+                <div style="font-size:.75rem;color:var(--muted);margin-bottom:.4rem">Profile Completeness</div>
+                <div class="progress-bar"><div class="progress-fill" id="pCompleteness" style="width:0%"></div></div>
+                <div style="font-size:.72rem;color:var(--cyan);margin-top:.3rem;text-align:right" id="pCompletenessPct">0%</div>
+              </div>
+              <div class="profile-meta" id="pMeta"></div>
+              <div style="display:flex;gap:.5rem;margin-top:1.25rem">
+                <button class="btn btn-ghost btn-sm w-full" onclick="editFromDash()">✏️ Edit</button>
+                <a href="recommendations.html" class="btn btn-primary btn-sm w-full">🎯 Recommendations</a>
+              </div>
+            </div>
+
+            <!-- Certifications -->
+            <div class="card" style="padding:1.25rem;margin-bottom:1.25rem">
+              <div style="font-size:.8rem;font-family:var(--font-mono);color:var(--cyan);letter-spacing:.08em;margin-bottom:.75rem">CERTIFICATIONS</div>
+              <div id="certsList" style="display:flex;flex-direction:column;gap:.4rem"></div>
+            </div>
+
+            <!-- Contact -->
+            <div class="card" style="padding:1.25rem">
+              <div style="font-size:.8rem;font-family:var(--font-mono);color:var(--cyan);letter-spacing:.08em;margin-bottom:.75rem">CONTACT</div>
+              <div id="contactInfo" style="font-size:.85rem;color:var(--white-2);display:flex;flex-direction:column;gap:.5rem"></div>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div>
+            <!-- Stats -->
+            <div class="dash-grid mb-3" style="margin-bottom:1.5rem">
+              <div class="stat-card">
+                <div style="font-size:1.5rem;margin-bottom:.4rem">🎯</div>
+                <div class="stat-number" id="dCgpa">—</div>
+                <div class="stat-label">CGPA / Score</div>
+              </div>
+              <div class="stat-card">
+                <div style="font-size:1.5rem;margin-bottom:.4rem">⚡</div>
+                <div class="stat-number" id="dSkillCount">0</div>
+                <div class="stat-label">Technical Skills</div>
+              </div>
+              <div class="stat-card">
+                <div style="font-size:1.5rem;margin-bottom:.4rem">📜</div>
+                <div class="stat-number" id="dCertCount">0</div>
+                <div class="stat-label">Certifications</div>
+              </div>
+              <div class="stat-card">
+                <div style="font-size:1.5rem;margin-bottom:.4rem">💼</div>
+                <div class="stat-number" id="dTopMatch">—</div>
+                <div class="stat-label">Best Match Score</div>
+              </div>
+            </div>
+
+            <!-- Skills Section -->
+            <div class="card mb-3" style="margin-bottom:1.5rem">
+              <div class="card-header">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <h3>⚡ Technical Skills</h3>
+                  <span class="badge badge-cyan" id="skillCountBadge">0 skills</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="techSkillsDisplay" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem"></div>
+                <div id="skillBars"></div>
+              </div>
+            </div>
+
+            <!-- Soft Skills & Interests -->
+            <div class="dash-grid" style="margin-bottom:1.5rem">
+              <div class="card" style="padding:1.25rem">
+                <div style="font-size:.8rem;font-family:var(--font-mono);color:var(--cyan);letter-spacing:.08em;margin-bottom:.75rem">SOFT SKILLS</div>
+                <div id="softSkillsDisplay" style="display:flex;flex-wrap:wrap;gap:.4rem"></div>
+              </div>
+              <div class="card" style="padding:1.25rem">
+                <div style="font-size:.8rem;font-family:var(--font-mono);color:var(--cyan);letter-spacing:.08em;margin-bottom:.75rem">AREAS OF INTEREST</div>
+                <div id="interestsDisplay" style="display:flex;flex-wrap:wrap;gap:.4rem"></div>
+              </div>
+            </div>
+
+            <!-- Projects -->
+            <div class="card mb-3" style="margin-bottom:1.5rem">
+              <div class="card-header"><h3>🚀 Projects</h3></div>
+              <div class="card-body" id="projectsDisplay" style="color:var(--muted);font-size:.9rem;line-height:1.8"></div>
+            </div>
+
+            <!-- AI Recommendations -->
+            <div class="card">
+              <div class="card-header">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
+                  <h3>🤖 AI Internship Recommendations</h3>
+                  <span class="badge badge-purple">AI-Powered</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <div style="background:rgba(124,77,255,.08);border:1px solid rgba(124,77,255,.2);border-radius:var(--radius);padding:1rem;margin-bottom:1.25rem;font-size:.85rem;color:var(--white-2);line-height:1.6" id="aiSummary"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem" id="matchCards"></div>
+                <div style="margin-top:1.25rem;text-align:center">
+                  <a href="recommendations.html" class="btn btn-primary">🔍 View All Internships</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer><div class="container"><div class="footer-bottom"><p>© 2025 AI Internship Allocation &amp; Recommendation System</p></div></div></footer>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="script.js"></script>
+<script>
+  let currentStudent = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    populateSelector();
+    const saved = sessionStorage.getItem('viewStudentId');
+    if (saved) {
+      document.getElementById('studentSelector').value = saved;
+      loadStudent(saved);
+      sessionStorage.removeItem('viewStudentId');
+    }
+    document.getElementById('studentSelector').addEventListener('change', e => {
+      if (e.target.value) loadStudent(e.target.value);
+      else { document.getElementById('noStudentMsg').classList.remove('hidden'); document.getElementById('dashContent').classList.add('hidden'); }
+    });
+  });
+
+  function populateSelector() {
+    const sel = document.getElementById('studentSelector');
+    const students = Store.get(KEYS.STUDENTS);
+    sel.innerHTML = '<option value="">— Select a Student —</option>';
+    students.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id; opt.textContent = `${s.fullName} (${s.rollNo})`;
+      sel.appendChild(opt);
+    });
+  }
+
+  function getInitials(name) {
+    return name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  }
+
+  function loadStudent(id) {
+    const s = Store.getOne(KEYS.STUDENTS, id);
+    if (!s) return;
+    currentStudent = s;
+    document.getElementById('noStudentMsg').classList.add('hidden');
+    document.getElementById('dashContent').classList.remove('hidden');
+
+    // Avatar & header
+    document.getElementById('pAvatar').textContent = getInitials(s.fullName);
+    document.getElementById('pName').textContent   = s.fullName;
+    document.getElementById('pRoll').textContent   = s.rollNo;
+    document.getElementById('pDept').textContent   = `${s.department} · ${s.semester}`;
+
+    // Completeness
+    const fields = [s.fullName,s.rollNo,s.department,s.semester,s.cgpa,s.technicalSkills,s.email,s.preferredDomain,s.certifications,s.projects,s.resumeFile];
+    const filled = fields.filter(Boolean).length;
+    const pct    = Math.round((filled/fields.length)*100);
+    document.getElementById('pCompleteness').style.width = pct+'%';
+    document.getElementById('pCompletenessPct').textContent = pct+'%';
+
+    // Meta
+    const meta = document.getElementById('pMeta');
+    meta.innerHTML = [
+      ['CGPA', s.cgpa || '—'],
+      ['Percentage', s.percentage ? s.percentage+'%' : '—'],
+      ['Preferred Domain', s.preferredDomain || '—'],
+      ['Resume', s.resumeFile || 'Not uploaded'],
+      ['Added', fmtDate(s.createdAt)],
+    ].map(([k,v])=>`<div class="pm-row"><span class="pm-key">${k}</span><span class="pm-val">${v}</span></div>`).join('');
+
+    // Certifications
+    const certs = (s.certifications||'').split(',').map(c=>c.trim()).filter(Boolean);
+    document.getElementById('certsList').innerHTML = certs.length
+      ? certs.map(c=>`<div style="font-size:.82rem;color:var(--white-2);display:flex;align-items:center;gap:.4rem"><span style="color:var(--success)">✓</span>${c}</div>`).join('')
+      : '<div style="color:var(--muted);font-size:.82rem">No certifications added.</div>';
+
+    // Contact
+    document.getElementById('contactInfo').innerHTML = [
+      s.email ? `<div>📧 ${s.email}</div>` : '',
+      s.phone ? `<div>📱 ${s.phone}</div>` : '',
+      s.city  ? `<div>📍 ${s.city}</div>` : '',
+    ].filter(Boolean).join('') || '<div style="color:var(--muted)">No contact info.</div>';
+
+    // Stats
+    const techSkills = (s.technicalSkills||'').split(',').map(t=>t.trim()).filter(Boolean);
+    document.getElementById('dCgpa').textContent       = s.cgpa || '—';
+    document.getElementById('dSkillCount').textContent = techSkills.length;
+    document.getElementById('dCertCount').textContent  = certs.length;
+
+    // Tech Skills
+    document.getElementById('techSkillsDisplay').innerHTML = techSkills.map(sk=>`<span class="chip">${sk}</span>`).join('');
+    document.getElementById('skillCountBadge').textContent = techSkills.length + ' skills';
+
+    // Skill bars (simulated proficiency)
+    const sb = document.getElementById('skillBars');
+    sb.innerHTML = '';
+    techSkills.slice(0,6).forEach((sk,i) => {
+      const pct = Math.min(100, 60 + (i * 7) % 40 + Math.floor(Math.random()*15));
+      sb.innerHTML += `<div class="skill-bar-row">
+        <div class="skill-bar-label">${sk}</div>
+        <div class="skill-bar-wrap"><div class="progress-bar"><div class="progress-fill" style="width:0%" data-target="${pct}"></div></div></div>
+        <div class="skill-bar-score">${pct}%</div>
+      </div>`;
+    });
+    setTimeout(() => sb.querySelectorAll('.progress-fill').forEach(el => { el.style.width = el.dataset.target + '%'; }), 100);
+
+    // Soft Skills
+    const soft = (s.softSkills||'').split(',').map(t=>t.trim()).filter(Boolean);
+    document.getElementById('softSkillsDisplay').innerHTML = soft.length
+      ? soft.map(sk=>`<span class="chip" style="background:rgba(124,77,255,.12);border-color:rgba(124,77,255,.25);color:var(--accent-2)">${sk}</span>`).join('')
+      : '<span style="color:var(--muted);font-size:.85rem">Not specified</span>';
+
+    // Interests
+    const interests = (s.areasOfInterest||'').split(',').map(t=>t.trim()).filter(Boolean);
+    document.getElementById('interestsDisplay').innerHTML = interests.length
+      ? interests.map(i=>`<span class="chip" style="background:rgba(0,200,151,.1);border-color:rgba(0,200,151,.25);color:var(--success)">${i}</span>`).join('')
+      : '<span style="color:var(--muted);font-size:.85rem">Not specified</span>';
+
+    // Projects
+    const projs = (s.projects||'').trim();
+    document.getElementById('projectsDisplay').innerHTML = projs
+      ? projs.split('\n').map(p=>`<div style="display:flex;gap:.5rem;margin-bottom:.4rem"><span style="color:var(--cyan)">▸</span><span>${p}</span></div>`).join('')
+      : '<span style="color:var(--muted)">No projects listed.</span>';
+
+    // AI Recommendations
+    buildRecommendations(s);
+  }
+
+  function buildRecommendations(student) {
+    const internships = Store.get(KEYS.INTERNSHIPS);
+    const scored = internships.map(i => ({ ...i, score: calcMatchScore(student, i) }))
+                              .sort((a,b)=>b.score-a.score);
+    const top = scored[0]?.score || 0;
+    document.getElementById('dTopMatch').textContent = top + '%';
+
+    const colors = { 80:'var(--success)', 60:'var(--warning)', 0:'var(--danger)' };
+    const scoreColor = s => s >= 80 ? colors[80] : s >= 60 ? colors[60] : colors[0];
+
+    document.getElementById('aiSummary').innerHTML =
+      `🤖 <strong>AI Analysis for ${student.fullName}:</strong> Based on your skills in <em>${(student.technicalSkills||'').split(',').slice(0,2).join(', ')}</em>, 
+       CGPA of <strong>${student.cgpa}</strong>, and interest in <strong>${student.preferredDomain}</strong>, 
+       our AI recommends <strong>${scored.filter(i=>i.score>=60).length}</strong> internships with ≥60% match. 
+       Your best match is <strong>${scored[0]?.title || '—'}</strong> at <strong>${scored[0]?.company || '—'}</strong> 
+       with a <strong style="color:var(--success)">${top}%</strong> compatibility score.`;
+
+    const cards = document.getElementById('matchCards');
+    cards.innerHTML = '';
+    scored.slice(0,6).forEach(i => {
+      const r  = 24; const circ = 2 * Math.PI * r;
+      const offset = circ - (i.score/100)*circ;
+      const col = scoreColor(i.score);
+      const div = document.createElement('div');
+      div.className = 'match-card';
+      div.onclick = () => { sessionStorage.setItem('filterDomain', i.domain); window.location.href='recommendations.html'; };
+      div.innerHTML = `
+        <div class="match-ring">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r="${r}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="4"/>
+            <circle cx="28" cy="28" r="${r}" fill="none" stroke="${col}" stroke-width="4"
+              stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+          </svg>
+          <div class="match-pct" style="color:${col}">${i.score}%</div>
+        </div>
+        <div class="match-info">
+          <div class="match-title">${i.title}</div>
+          <div class="match-co">${i.company} · ${i.location}</div>
+          <div class="match-tags">
+            ${(i.tags||[]).slice(0,2).map(t=>`<span class="chip" style="font-size:.68rem;padding:.1rem .5rem">${t}</span>`).join('')}
+          </div>
+        </div>`;
+      cards.appendChild(div);
+    });
+  }
+
+  function editFromDash() {
+    if (!currentStudent) return;
+    sessionStorage.setItem('editStudentId', currentStudent.id);
+    window.location.href = 'student-management.html';
+  }
+</script>
+</body>
+</html>

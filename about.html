@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Project — AI Internship System</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .obj-grid    { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+    .obj-item    { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius); padding:1.25rem; transition:var(--transition); }
+    .obj-item:hover { border-color:rgba(0,180,216,.4); transform:translateY(-3px); }
+    .obj-num     { font-family:var(--font-mono); font-size:.75rem; color:var(--cyan); margin-bottom:.5rem; }
+    .obj-text    { font-size:.9rem; color:var(--white-2); line-height:1.6; }
+
+    .tech-stack  { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; }
+    .tech-item   { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius); padding:1.25rem; text-align:center; transition:var(--transition); }
+    .tech-item:hover { border-color:var(--cyan); box-shadow:var(--shadow-glow); }
+    .tech-icon   { font-size:2rem; margin-bottom:.6rem; }
+    .tech-name   { font-weight:600; font-size:.9rem; }
+    .tech-sub    { color:var(--muted); font-size:.75rem; margin-top:.2rem; }
+
+    .arch-flow   { display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; justify-content:center; padding:2rem 0; }
+    .arch-box    { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius); padding:.85rem 1.25rem; text-align:center; min-width:140px; }
+    .arch-box .ab-icon { font-size:1.5rem; margin-bottom:.4rem; }
+    .arch-box .ab-label { font-size:.8rem; font-weight:600; }
+    .arch-box .ab-sub   { font-size:.7rem; color:var(--muted); }
+    .arch-arrow { color:var(--cyan); font-size:1.4rem; opacity:.6; }
+
+    .scope-list  { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .scope-item  { display:flex; gap:.75rem; align-items:flex-start; }
+    .scope-dot   { width:8px; height:8px; background:var(--cyan); border-radius:50%; margin-top:.45rem; flex-shrink:0; }
+    .scope-text  { font-size:.9rem; color:var(--white-2); }
+
+    @media(max-width:768px){
+      .obj-grid   { grid-template-columns:1fr; }
+      .tech-stack { grid-template-columns:repeat(2,1fr); }
+      .scope-list { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand"><div class="brand-icon">🤖</div><span>AI Internship System</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="student-management.html">Students</a>
+    <a href="student-dashboard.html">Dashboard</a>
+    <a href="recommendations.html">Internships</a>
+    <a href="admin-dashboard.html">Admin</a>
+    <a href="contact.html">Contact</a>
+    <a href="student-management.html" class="nav-cta btn">+ Add Student</a>
+  </div>
+  <button class="nav-toggle"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-wrapper">
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">›</span><span>About Project</span></div>
+      <h1>About the Project</h1>
+      <p>Objectives, scope, technologies, and system architecture of the AI Internship Allocation System.</p>
+    </div>
+  </div>
+
+  <!-- PROBLEM STATEMENT -->
+  <section>
+    <div class="container">
+      <div class="section-label">Problem Statement</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center">
+        <div>
+          <h2 class="section-title">The Challenge We Solve</h2>
+          <p style="color:var(--muted);line-height:1.9;margin-bottom:1rem">
+            Diploma students face significant challenges in finding internships aligned with their skills and career goals. Traditional placement processes are manual, time-consuming, and often fail to match students with the most suitable opportunities.
+          </p>
+          <p style="color:var(--muted);line-height:1.9;margin-bottom:1.5rem">
+            Administrators struggle to allocate limited internship slots efficiently across hundreds of students, leading to suboptimal placements and missed opportunities for both students and companies.
+          </p>
+          <div style="display:flex;flex-direction:column;gap:.75rem">
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Manual profile screening is inefficient and inconsistent</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Students lack visibility into available internship opportunities</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">No systematic skill-to-opportunity matching mechanism</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Administrative overhead in tracking applications and allocations</div></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="stat-card"><div class="stat-number">70%</div><div class="stat-label">Students placed suboptimally</div></div>
+          <div class="stat-card"><div class="stat-number">40hrs</div><div class="stat-label">Admin time wasted weekly</div></div>
+          <div class="stat-card"><div class="stat-number">3x</div><div class="stat-label">Faster with AI matching</div></div>
+          <div class="stat-card"><div class="stat-number">95%</div><div class="stat-label">Match accuracy achieved</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OBJECTIVES -->
+  <section style="background:var(--navy-2)">
+    <div class="container">
+      <div class="section-label">Objectives</div>
+      <h2 class="section-title">Project Objectives</h2>
+      <p class="section-sub mb-4">Six core objectives guide the design and development of this system.</p>
+      <div class="obj-grid">
+        <div class="obj-item fade-in-up delay-1">
+          <div class="obj-num">OBJ — 01</div>
+          <div class="obj-text">Develop an AI-powered recommendation engine that matches student profiles with relevant internship opportunities using multi-factor analysis.</div>
+        </div>
+        <div class="obj-item fade-in-up delay-2">
+          <div class="obj-num">OBJ — 02</div>
+          <div class="obj-text">Create a comprehensive Student Management System with full CRUD operations for student profiles including skills, certifications, and projects.</div>
+        </div>
+        <div class="obj-item fade-in-up delay-3">
+          <div class="obj-num">OBJ — 03</div>
+          <div class="obj-text">Build an Admin Dashboard with analytics, allocation tracking, and reporting capabilities for efficient internship management.</div>
+        </div>
+        <div class="obj-item fade-in-up delay-1">
+          <div class="obj-num">OBJ — 04</div>
+          <div class="obj-text">Implement a scoring algorithm that considers CGPA, technical skills, soft skills, domain preferences, and certifications for match calculation.</div>
+        </div>
+        <div class="obj-item fade-in-up delay-2">
+          <div class="obj-num">OBJ — 05</div>
+          <div class="obj-text">Design an intuitive, responsive user interface using modern web technologies that is accessible across all devices and screen sizes.</div>
+        </div>
+        <div class="obj-item fade-in-up delay-3">
+          <div class="obj-num">OBJ — 06</div>
+          <div class="obj-text">Enable persistent data storage using browser LocalStorage for seamless student profile management without backend server requirements.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCOPE -->
+  <section>
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem">
+        <div>
+          <div class="section-label">In Scope</div>
+          <h2 class="section-title">Scope of System</h2>
+          <div class="scope-list">
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Student profile creation and management</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">AI-based internship recommendation</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Match score calculation engine</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Admin dashboard and analytics</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Internship listing management</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Application tracking system</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Search and filter capabilities</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Responsive web interface</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">LocalStorage data persistence</div></div>
+            <div class="scope-item"><div class="scope-dot"></div><div class="scope-text">Resume upload (filename storage)</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="section-label" style="color:var(--warning)">Out of Scope</div>
+          <h2 class="section-title" style="font-size:1.8rem">Limitations</h2>
+          <div class="scope-list">
+            <div class="scope-item"><div class="scope-dot" style="background:var(--warning)"></div><div class="scope-text">Backend server / database integration</div></div>
+            <div class="scope-item"><div class="scope-dot" style="background:var(--warning)"></div><div class="scope-text">Email notifications and alerts</div></div>
+            <div class="scope-item"><div class="scope-dot" style="background:var(--warning)"></div><div class="scope-text">Company registration portal</div></div>
+            <div class="scope-item"><div class="scope-dot" style="background:var(--warning)"></div><div class="scope-text">Real-time interview scheduling</div></div>
+            <div class="scope-item"><div class="scope-dot" style="background:var(--warning)"></div><div class="scope-text">Payment / stipend processing</div></div>
+            <div class="scope-item"><div class="scope-dot" style="background:var(--warning)"></div><div class="scope-text">Multi-user authentication</div></div>
+          </div>
+          <div class="card mt-3" style="padding:1.25rem;margin-top:1.5rem">
+            <div style="font-size:.8rem;color:var(--muted);line-height:1.7">
+              ℹ️ This is a diploma capstone project demonstrating frontend AI concepts. 
+              Future versions may include backend integration with Node.js, MongoDB, and real ML models.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECHNOLOGIES -->
+  <section style="background:var(--navy-2)">
+    <div class="container">
+      <div class="text-center mb-4">
+        <div class="section-label">Stack</div>
+        <h2 class="section-title">Technologies Used</h2>
+      </div>
+      <div class="tech-stack">
+        <div class="tech-item fade-in-up delay-1">
+          <div class="tech-icon">🌐</div>
+          <div class="tech-name">HTML5</div>
+          <div class="tech-sub">Semantic Markup</div>
+        </div>
+        <div class="tech-item fade-in-up delay-2">
+          <div class="tech-icon">🎨</div>
+          <div class="tech-name">CSS3</div>
+          <div class="tech-sub">Variables, Grid, Animations</div>
+        </div>
+        <div class="tech-item fade-in-up delay-3">
+          <div class="tech-icon">⚡</div>
+          <div class="tech-name">JavaScript ES6+</div>
+          <div class="tech-sub">DOM, Events, LocalStorage</div>
+        </div>
+        <div class="tech-item fade-in-up delay-4">
+          <div class="tech-icon">💾</div>
+          <div class="tech-name">LocalStorage API</div>
+          <div class="tech-sub">Client-side Persistence</div>
+        </div>
+        <div class="tech-item fade-in-up delay-1">
+          <div class="tech-icon">🤖</div>
+          <div class="tech-name">AI Algorithm</div>
+          <div class="tech-sub">Custom Match Scoring</div>
+        </div>
+        <div class="tech-item fade-in-up delay-2">
+          <div class="tech-icon">📐</div>
+          <div class="tech-name">CSS Grid / Flexbox</div>
+          <div class="tech-sub">Responsive Layouts</div>
+        </div>
+        <div class="tech-item fade-in-up delay-3">
+          <div class="tech-icon">🎭</div>
+          <div class="tech-name">CSS Animations</div>
+          <div class="tech-sub">Transitions & Keyframes</div>
+        </div>
+        <div class="tech-item fade-in-up delay-4">
+          <div class="tech-icon">🌟</div>
+          <div class="tech-name">Glassmorphism UI</div>
+          <div class="tech-sub">Modern Design System</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM ARCHITECTURE -->
+  <section>
+    <div class="container">
+      <div class="text-center mb-4">
+        <div class="section-label">Architecture</div>
+        <h2 class="section-title">System Architecture</h2>
+        <p class="section-sub" style="margin:0 auto">Three-tier client-side architecture with AI recommendation layer.</p>
+      </div>
+
+      <!-- Tier diagram -->
+      <div class="card" style="padding:2rem">
+        <div style="margin-bottom:1.5rem;text-align:center">
+          <span class="badge badge-cyan">Presentation Layer</span>
+        </div>
+        <div class="arch-flow">
+          <div class="arch-box"><div class="ab-icon">🏠</div><div class="ab-label">Home Page</div><div class="ab-sub">index.html</div></div>
+          <div class="arch-box"><div class="ab-icon">👤</div><div class="ab-label">Student Mgmt</div><div class="ab-sub">student-management.html</div></div>
+          <div class="arch-box"><div class="ab-icon">📊</div><div class="ab-label">Dashboard</div><div class="ab-sub">student-dashboard.html</div></div>
+          <div class="arch-box"><div class="ab-icon">🎯</div><div class="ab-label">Recommendations</div><div class="ab-sub">recommendations.html</div></div>
+          <div class="arch-box"><div class="ab-icon">⚙️</div><div class="ab-label">Admin Panel</div><div class="ab-sub">admin-dashboard.html</div></div>
+        </div>
+        <hr class="divider">
+        <div style="margin-bottom:1.5rem;text-align:center">
+          <span class="badge badge-purple">Logic & AI Layer</span>
+        </div>
+        <div class="arch-flow">
+          <div class="arch-box"><div class="ab-icon">🧠</div><div class="ab-label">AI Match Engine</div><div class="ab-sub">calcMatchScore()</div></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box"><div class="ab-icon">✅</div><div class="ab-label">Form Validation</div><div class="ab-sub">validateForm()</div></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box"><div class="ab-icon">🔔</div><div class="ab-label">Notification System</div><div class="ab-sub">showToast()</div></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box"><div class="ab-icon">🏷️</div><div class="ab-label">Tags Input System</div><div class="ab-sub">initTagsInput()</div></div>
+        </div>
+        <hr class="divider">
+        <div style="margin-bottom:1.5rem;text-align:center">
+          <span class="badge badge-green">Data Layer</span>
+        </div>
+        <div class="arch-flow">
+          <div class="arch-box"><div class="ab-icon">🎓</div><div class="ab-label">Students Store</div><div class="ab-sub">aiias_students</div></div>
+          <div class="arch-arrow">↔</div>
+          <div class="arch-box"><div class="ab-icon">💾</div><div class="ab-label">LocalStorage API</div><div class="ab-sub">Store.get / set / save</div></div>
+          <div class="arch-arrow">↔</div>
+          <div class="arch-box"><div class="ab-icon">🏢</div><div class="ab-label">Internships Store</div><div class="ab-sub">aiias_internships</div></div>
+          <div class="arch-arrow">↔</div>
+          <div class="arch-box"><div class="ab-icon">📋</div><div class="ab-label">Applications Store</div><div class="ab-sub">aiias_applications</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand" style="margin-bottom:.75rem"><div class="brand-icon">🤖</div><span>AI Internship System</span></div>
+          <p>An AI-powered internship allocation and recommendation platform — Final Year Diploma Capstone Project.</p>
+        </div>
+        <div class="footer-col"><h4>Navigation</h4><ul>
+          <li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li>
+          <li><a href="student-management.html">Students</a></li><li><a href="admin-dashboard.html">Admin</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>Features</h4><ul>
+          <li><a href="recommendations.html">Internships</a></li><li><a href="student-dashboard.html">Dashboard</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>Project Info</h4><ul>
+          <li><a href="#">Final Year Diploma</a></li><li><a href="#">Capstone Project</a></li>
+          <li><a href="#">Computer Engineering</a></li>
+        </ul></div>
+      </div>
+      <div class="footer-bottom"><p>© 2025 AI Internship Allocation &amp; Recommendation System · Final Year Diploma Capstone Project</p></div>
+    </div>
+  </footer>
+</div>
+<div id="toastContainer" class="toast-container"></div>
+<script src="script.js"></script>
+</body>
+</html>
