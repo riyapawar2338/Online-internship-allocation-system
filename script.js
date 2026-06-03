@@ -1,6 +1,4 @@
-bash
 
-cat > /mnt/user-data/outputs/script.js << 'JSEOF'
 /* ============================================================
    AI INTERNSHIP ALLOCATION & RECOMMENDATION SYSTEM
    script.js — Shared Logic · API Layer · LocalStorage Fallback
@@ -13,7 +11,7 @@ let API_TOKEN  = localStorage.getItem('aiias_token') || null;
 
 // ── Feature flag: use real API or LocalStorage fallback ───────
 // Auto-detects: if backend is reachable, switches to API mode
-let USE_API = false;
+let USE_API = true;
 (async () => {
   try {
     const r = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(1500) });
@@ -474,5 +472,4 @@ document.addEventListener('DOMContentLoaded', () => {
     m.addEventListener('click', e=>{ if(e.target===m) closeModal(m.id); });
   });
 });
-JSEOF
-echo "Done"
+
