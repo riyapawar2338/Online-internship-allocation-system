@@ -1,8 +1,8 @@
 // routes/adminRoutes.js
 const express = require('express');
 const router  = express.Router();
-const ctrl    = require('../controllers/adminController');
-const { protect } = require('../middleware/auth');
+const ctrl    = require('../adminController');
+const { protect } = require('../auth');
 
 // All admin routes are protected
 router.use(protect);
