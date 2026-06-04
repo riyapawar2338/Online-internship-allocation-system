@@ -1,10 +1,10 @@
 // routes/studentRoutes.js
 const express = require('express');
 const router  = express.Router();
-const ctrl    = require('../studentController');
-const { protect }                        = require('../auth');
-const { studentRules, mongoIdParam, validate } = require('../validate');
-const upload  = require('../upload');
+const ctrl    = require('./studentController');
+const { protect }                        = require('./auth');
+const { studentRules, mongoIdParam, validate } = require('./validate');
+const upload  = require('./upload');
 
 // Public: browse students (admin also uses this)
 router.get ('/'                    , ctrl.getAllStudents);
