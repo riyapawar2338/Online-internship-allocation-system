@@ -1,10 +1,10 @@
 // controllers/studentController.js
 const path        = require('path');
 const fs          = require('fs');
-const Student     = require('../models/Student');
-const Application = require('../models/Application');
-const { sendSuccess, sendError, paginate } = require('../services/apiResponse');
-const { getRecommendations }               =  require('../services/aiMatcher');
+const Student     = require('../Student');
+const Application = require('../Application');
+const { sendSuccess, sendError, paginate } = require('../apiResponse');
+const { getRecommendations }               =  require('../aiMatcher');
 const Internship  = require('../models/Internship');
 
 // ── GET /api/students ─────────────────────────────────────────
