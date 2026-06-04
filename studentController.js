@@ -1,11 +1,11 @@
 // controllers/studentController.js
 const path        = require('path');
 const fs          = require('fs');
-const Student     = require('../Student');
-const Application = require('../Application');
-const { sendSuccess, sendError, paginate } = require('../apiResponse');
-const { getRecommendations }               =  require('../aiMatcher');
-const Internship  = require('../models/Internship');
+const Student     = require('./Student');
+const Application = require('./Application');
+const { sendSuccess, sendError, paginate } = require('./apiResponse');
+const { getRecommendations }               =  require('./aiMatcher');
+const Internship  = require('./Internship');
 
 // ── GET /api/students ─────────────────────────────────────────
 // Query params: page, limit, search, department, semester, domain, sortBy
