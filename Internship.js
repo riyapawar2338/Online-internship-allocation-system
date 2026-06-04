@@ -121,4 +121,6 @@ InternshipSchema.virtual('isExpired').get(function () {
   return this.deadline && new Date(this.deadline) < new Date();
 });
 
-module.exports = mongoose.model('Internship', InternshipSchema);
+module.exports =
+  mongoose.models.Internship ||
+  mongoose.model('Internship', InternshipSchema);
