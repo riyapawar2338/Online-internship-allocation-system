@@ -1,9 +1,9 @@
 // routes/applicationRoutes.js
 const express = require('express');
 const router  = express.Router();
-const ctrl    = require('../controllers/applicationController');
-const { protect }                               = require('../middleware/auth');
-const { applicationRules, mongoIdParam, validate } = require('../middleware/validate');
+const ctrl    = require('../applicationController');
+const { protect }                               = require('../auth');
+const { applicationRules, mongoIdParam, validate } = require('../validate');
 
 // Public: submit application
 router.post('/', applicationRules, validate, ctrl.createApplication);
