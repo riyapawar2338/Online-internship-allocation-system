@@ -1,9 +1,9 @@
 // controllers/internshipController.js
-const Internship  = require('../Internship');
-const Application = require('../Application');
-const Student     = require('../Student');
-const { sendSuccess, sendError, paginate } = require('../apiResponse');
-const { getBulkBestMatches }              =  require('../aiMatcher');
+const Internship  = require('./Internship');
+const Application = require('./Application');
+const Student     = require('./Student');
+const { sendSuccess, sendError, paginate } = require('./apiResponse');
+const { getBulkBestMatches }              =  require('./aiMatcher');
 
 // ── GET /api/internships ──────────────────────────────────────
 exports.getAllInternships = async (req, res) => {
