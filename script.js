@@ -11,15 +11,23 @@ let API_TOKEN  = localStorage.getItem('aiias_token') || null;
 
 // ── Feature flag: use real API or LocalStorage fallback ───────
 // Auto-detects: if backend is reachable, switches to API mode
-let USE_API = true;
-(async () => {
+let USE_API = false;
+
+async function detectBackend() {
   try {
-    const r = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(1500) });
-    USE_API = r.ok;
-    if (USE_API) console.info('✅ Backend connected — using REST API mode');
-    else         console.info('ℹ️  Backend offline — using LocalStorage mode');
-  } catch { console.info('ℹ️  Backend offline — using LocalStorage mode'); }
-})();
+    const r = await fetch(`${API_BASE}/health`);
+    const data = await r.json();
+
+    USE_API = true;
+    console.info("✅ Backend connected — API mode ON");
+
+  } catch (err) {
+    USE_API = false;
+    console.info("ℹ️ Backend offline — LocalStorage mode");
+  }
+}
+
+detectBackend();
 
 // ─────────────────────────────────────────────────────────────
 //  API LAYER
@@ -32,13 +40,28 @@ const Api = {
   },
 
   async _request(method, path, body = null, isFormData = false) {
-    const opts = { method, headers: isFormData ? { Authorization: `Bearer ${API_TOKEN}` } : this._headers() };
-    if (body) opts.body = isFormData ? body : JSON.stringify(body);
-    const res  = await fetch(`${API_BASE}${path}`, opts);
-    const json = await res.json();
-    if (!json.success) throw new Error(json.message || 'API error');
-    return json;
-  },
+  const headers = isFormData
+    ? { Authorization: API_TOKEN ? `Bearer ${API_TOKEN}` : '' }
+    : this._headers();
+
+  const opts = { method, headers };
+
+  if (body) {
+    opts.body = isFormData ? body : JSON.stringify(body);
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, opts);
+  const text = await res.text();
+
+  let json;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    throw new Error("Invalid JSON response from server");
+  }
+
+  return json;
+},
 
   get   (path)        { return this._request('GET',    path); },
   post  (path, body)  { return this._request('POST',   path, body); },
@@ -120,22 +143,34 @@ const DataService = {
     return Store.getOne(KEYS.STUDENTS, id);
   },
 
-  async createStudent(formData, isFormData = false) {
-    if (USE_API) {
-      const r = isFormData ? await Api.upload('/students', formData) : await Api.post('/students', formData);
-      return r.data;
+  async createStudent(formData, isFormData = true) {
+  if (USE_API) {
+    const r = isFormData
+      ? await Api.upload('/students', formData)
+      : await Api.post('/students', formData);
+
+    return r.data;
+  }
+
+  const student = {
+    ...(isFormData ? Object.fromEntries(formData) : formData),
+    id: genId(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  ['technicalSkills','softSkills','certifications','areasOfInterest'].forEach(f => {
+    if (typeof student[f] === 'string') {
+      student[f] = student[f]
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
     }
-    const student = {
-      ...( isFormData ? Object.fromEntries(formData) : formData ),
-      id: genId(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-    };
-    // Normalise arrays
-    ['technicalSkills','softSkills','certifications','areasOfInterest'].forEach(f => {
-      if (typeof student[f] === 'string') student[f] = student[f].split(',').map(s=>s.trim()).filter(Boolean);
-    });
-    Store.save(KEYS.STUDENTS, student);
-    return student;
-  },
+  });
+
+  Store.save(KEYS.STUDENTS, student);
+  return student;
+},
 
   async updateStudent(id, formData, isFormData = false) {
     if (USE_API) {
@@ -472,4 +507,3 @@ document.addEventListener('DOMContentLoaded', () => {
     m.addEventListener('click', e=>{ if(e.target===m) closeModal(m.id); });
   });
 });
-
