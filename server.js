@@ -11,7 +11,7 @@ const morgan      = require('morgan');
 const path        = require('path');
 const rateLimit   = require('express-rate-limit');
 
-const connectDB = require('./db');
+const connectDB            = require('./db');
 const { errorHandler }     = require('./errorHandler');
 
 // ── Connect Database ──────────────────────────────────────────
