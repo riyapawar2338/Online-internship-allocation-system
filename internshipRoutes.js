@@ -1,9 +1,9 @@
 // routes/internshipRoutes.js
 const express = require('express');
 const router  = express.Router();
-const ctrl    = require('../controllers/internshipController');
-const { protect }                              = require('../middleware/auth');
-const { internshipRules, mongoIdParam, validate } = require('../middleware/validate');
+const ctrl    = require('../internshipController');
+const { protect }                              = require('../auth');
+const { internshipRules, mongoIdParam, validate } = require('../validate');
 
 // Public
 router.get('/meta/filters'        , ctrl.getFilterMeta);
