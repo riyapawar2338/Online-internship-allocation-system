@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ── Save student (called by button onclick, NOT form submit) ── */
-function saveStudent() {
+async function saveStudent() {
   // Sync hidden fields from tag controllers
   document.getElementById('sTechSkills').value    = techCtrl.getTags().join(',');
   document.getElementById('sSoftSkills').value    = softCtrl.getTags().join(',');
@@ -443,10 +443,21 @@ function saveStudent() {
     updatedAt:       new Date().toISOString(),
   };
 
-  Store.save(KEYS.STUDENTS, student);
-  showToast('✅ ' + student.fullName + (existingId ? ' updated' : ' added') + ' successfully!', 'success');
+  try {
+  await DataService.createStudent(student, false);
+
+  showToast(
+    '✅ ' + student.fullName + ' added successfully!',
+    'success'
+  );
+
   resetForm();
   renderStudents();
+
+} catch (err) {
+  console.error(err);
+  showToast('Failed to save student', 'error');
+}
 }
 
 /* ── Edit student ───────────────────────────────────────────── */
