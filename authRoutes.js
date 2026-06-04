@@ -1,9 +1,9 @@
 // routes/authRoutes.js
 const express = require('express');
 const router  = express.Router();
-const { login, logout, getMe, register } = require('../authController');
-const { protect, authorize }             = require('../auth');
-const { loginRules, validate }           = require('../validate');
+const { login, logout, getMe, register } = require('./authController');
+const { protect, authorize }             = require('./auth');
+const { loginRules, validate }           = require('./validate');
 
 // POST /api/auth/login
 router.post('/login', loginRules, validate, login);
