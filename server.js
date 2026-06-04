@@ -32,6 +32,7 @@ app.use(
 // ── CORS ──────────────────────────────────────────────────────
 const allowedOrigins = [
   process.env.CLIENT_ORIGIN || 'http://127.0.0.1:5500',
+  'https://riyapawar2338.github.io',
   'http://localhost:5500',
   'http://127.0.0.1:3000',
   'http://localhost:3000',
