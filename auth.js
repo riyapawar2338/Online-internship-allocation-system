@@ -1,6 +1,6 @@
 // middleware/auth.js
 const jwt = require('jsonwebtoken');
-const Admin = require('../Admin');
+const Admin = require('./Admin');
 
 // ── Protect: require valid JWT ────────────────────────────────
 exports.protect = async (req, res, next) => {
