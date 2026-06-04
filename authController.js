@@ -1,6 +1,6 @@
 // controllers/authController.js
 const Admin = require('./Admin');
-const { sendSuccess, sendError } = require('../apiResponse');
+const { sendSuccess, sendError } = require('./apiResponse');
 
 // ── POST /api/auth/login ──────────────────────────────────────
 exports.login = async (req, res) => {
