@@ -82,11 +82,11 @@ app.use(
 );
 
 // ── API Routes ────────────────────────────────────────────────
-app.use('/api/auth',         require('./routes/authRoutes'));
-app.use('/api/students',     require('./routes/studentRoutes'));
-app.use('/api/internships',  require('./routes/internshipRoutes'));
-app.use('/api/applications', require('./routes/applicationRoutes'));
-app.use('/api/admin',        require('./routes/adminRoutes'));
+app.use('/api/auth',         require('./authRoutes'));
+app.use('/api/students',     require('./studentRoutes'));
+app.use('/api/internships',  require('./internshipRoutes'));
+app.use('/api/applications', require('./applicationRoutes'));
+app.use('/api/admin',        require('./adminRoutes'));
 
 // ── Health Check ──────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
