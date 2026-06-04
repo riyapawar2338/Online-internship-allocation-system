@@ -1,10 +1,10 @@
 // controllers/adminController.js
-const Student     = require('../models/Student');
-const Internship  = require('../models/Internship');
-const Application = require('../models/Application');
-const Admin       = require('../models/Admin');
-const { sendSuccess, sendError } = require('../services/apiResponse');
-const { getBulkBestMatches }     =  require('../services/aiMatcher');
+const Student     = require('../Student');
+const Internship  = require('../Internship');
+const Application = require('../Application');
+const Admin       = require('../Admin');
+const { sendSuccess, sendError } = require('../apiResponse');
+const { getBulkBestMatches }     =  require('../aiMatcher');
 
 // ── GET /api/admin/dashboard ──────────────────────────────────
 exports.getDashboard = async (req, res) => {
