@@ -12,7 +12,7 @@ const path        = require('path');
 const rateLimit   = require('express-rate-limit');
 
 const connectDB = require('./db');
-const { errorHandler }     = require('./middleware/errorHandler');
+const { errorHandler }     = require('./errorHandler');
 
 // ── Connect Database ──────────────────────────────────────────
 connectDB().catch(err => {
