@@ -6,7 +6,7 @@
 'use strict';
 
 // ── API Configuration ─────────────────────────────────────────
-const API_BASE = "http://localhost:5001/api";
+const API_BASE = "https://online-internship-allocation-system.onrender.com/api";
 let API_TOKEN  = localStorage.getItem('aiias_token') || null;
 
 // ── Feature flag: use real API or LocalStorage fallback ───────
