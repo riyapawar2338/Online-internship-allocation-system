@@ -1,5 +1,5 @@
 // controllers/authController.js
-const Admin = require('../Admin');
+const Admin = require('./Admin');
 const { sendSuccess, sendError } = require('../apiResponse');
 
 // ── POST /api/auth/login ──────────────────────────────────────
