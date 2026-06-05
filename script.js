@@ -100,7 +100,22 @@ const Api = {
     console.log("✅ Login successful");
     return data.data;
   }
+// 👇 PUT THIS AFTER Api object
 
+async function handleLogin() {
+  try {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    await Api.login(email, password);
+
+    alert("Login successful");
+
+    location.reload();
+  } catch (err) {
+    alert(err.message);
+  }
+}
   throw new Error("Token not received from server");
 }
 // Auth helpers
