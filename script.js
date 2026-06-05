@@ -86,33 +86,22 @@ const Api = {
 
   const data = await res.json();
 
-  if (data.token) {
-    API_TOKEN = data.token;
-    localStorage.setItem("aiias_token", data.token);
-    console.log("✅ Login successful");
-    return data;
-  } else {
+  if (!res.ok) {
     throw new Error(data.message || "Login failed");
   }
-}
-};
 
-async function handleLogin() {
-  try {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+  // ⚠️ IMPORTANT: backend returns token inside data.data.token
+  const token = data?.data?.token;
 
-    await Api.login(email, password);
+  if (token) {
+    API_TOKEN = token;
+    localStorage.setItem("aiias_token", token);
 
-    alert("Login successful");
-
-    location.reload(); // reload to activate token
-  } catch (err) {
-    alert(err.message);
+    console.log("✅ Login successful");
+    return data.data;
   }
-}
-function refreshToken() {
-  API_TOKEN = localStorage.getItem("aiias_token");
+
+  throw new Error("Token not received from server");
 }
 // Auth helpers
 const Auth = {
