@@ -96,7 +96,9 @@ const Api = {
   }
 }
 };
-
+function refreshToken() {
+  API_TOKEN = localStorage.getItem("aiias_token");
+}
 // Auth helpers
 const Auth = {
   setToken(token) { API_TOKEN = token; localStorage.setItem('aiias_token', token); },
