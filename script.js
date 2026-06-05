@@ -96,6 +96,21 @@ const Api = {
   }
 }
 };
+
+async function handleLogin() {
+  try {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    await Api.login(email, password);
+
+    alert("Login successful");
+
+    location.reload(); // reload to activate token
+  } catch (err) {
+    alert(err.message);
+  }
+}
 function refreshToken() {
   API_TOKEN = localStorage.getItem("aiias_token");
 }
