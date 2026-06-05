@@ -7,7 +7,11 @@
 
 // ── API Configuration ─────────────────────────────────────────
 const API_BASE = "https://online-internship-allocation-system.onrender.com/api";
-let API_TOKEN  = localStorage.getItem('aiias_token') || null;
+let API_TOKEN = localStorage.getItem('aiias_token');
+
+if (API_TOKEN) {
+  console.log("🔑 Token loaded from storage");
+}
 
 // ── Feature flag: use real API or LocalStorage fallback ───────
 // Auto-detects: if backend is reachable, switches to API mode
@@ -70,6 +74,27 @@ const Api = {
   del   (path)        { return this._request('DELETE', path); },
   upload(path, fd)    { return this._request('POST',   path, fd, true); },
   uploadPut(path, fd) { return this._request('PUT',    path, fd, true); },
+
+   async login(email, password) {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    API_TOKEN = data.token;
+    localStorage.setItem("aiias_token", data.token);
+    console.log("✅ Login successful");
+    return data;
+  } else {
+    throw new Error(data.message || "Login failed");
+  }
+}
 };
 
 // Auth helpers
